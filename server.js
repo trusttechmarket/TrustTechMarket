@@ -25,7 +25,7 @@ app.get('/board/:id', function(request, response) {
     board.query(sql, function(err, rows) {
         if(err) console.log(`query error \n` + err);
         else {
-            response.send(`<h1>rows[0].title</h1>`);
+            response.send(`<h1>${rows[0].title}</h1>`);
         }
     })
 })
