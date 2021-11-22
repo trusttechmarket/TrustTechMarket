@@ -105,3 +105,9 @@ dist
 
 #database login
 database.js
+
+#react temporary
+/client
+
+#ignore manifest
+goorm.manifest
