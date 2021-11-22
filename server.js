@@ -14,7 +14,7 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 
-const saltRounds = 10;
+var saltRounds = 10;
 
 
 
@@ -28,7 +28,7 @@ app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
 app.get('/board/:id', function(request, response) {
-    var boardID = parseInt(request.param('id'));
+    var boardID = Number(request.param('id'));
     var sql = `SELECT * FROM board WHERE Post_SN = ${boardID}`;
     board.query(sql, function(err, data) {
         if(err) console.log("query error \n" + err);
@@ -43,8 +43,13 @@ app.post('/register', function(request, response) {
     var userPW = request.body.user_pw;
     var userEmail = request.body.user_email;
     var userRegion = request.body.user_region;
-    var sql = `SELECT * FROM user WHERE user_id = ${userID}`;
-    var userHashPW
+    var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
+    var userHashPW;
+    console.log("id: " + userID);
+    
+    
+    
+    
     
     bcrypt.hash(userPW, saltRounds, function(err, hash) {
         if(err) console.log("encrypt error \n" + err);
@@ -71,7 +76,7 @@ app.post('/register', function(request, response) {
 app.post('/login', function(request, response) {
     var userID = request.body.user_id;
     var userPW = request.body.user_pw;
-    var sql = `SELECT * FROM user WHERE user_id = ${userID}`;
+    var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     
     account.query(sql, function(err, data) {
         if(err) console.log("login error \n" + err);
@@ -87,7 +92,7 @@ app.post('/login', function(request, response) {
                     response.redirect('/');
                 }
                 else {
-                    var token = jwt.sign(data[0].user_sn.toHexString(), 'secretToken')
+                    var token = jwt.sign(data[0].user_sn, 'secretToken')
                     account.query(`UPDATE user SET token=(?) WHERE user_id = ${userID}`,[token]);
                     response.cookie("X_auth", token);
                     response.status(200).send('<srcript>alert("로그인 성공");</script>');
