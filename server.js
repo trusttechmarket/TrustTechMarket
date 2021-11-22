@@ -89,13 +89,19 @@ app.post('/login', function(request, response) {
                 if(err) console.log("password error \n" + err);
                 if(!result) {
                     response.status(400).send('<srcript>alert("로그인 실패");</script>');
-                    response.redirect('/');
+                    response.redirect('/login');
                 }
                 else {
                     var token = jwt.sign(data[0].user_sn, 'secretToken')
-                    account.query(`UPDATE user SET token=(?) WHERE user_id = ${userID}`,[token]);
-                    response.cookie("X_auth", token);
-                    response.status(200).send('<srcript>alert("로그인 성공");</script>');
+                    account.query(`UPDATE user SET token=(?) WHERE user_id = "${userID}"`, [token], function(err, data) {
+                        if(err) console.log("login error2 \n" + err);
+                        else {
+                            var expiryDate = new Date( Date.now() + 60 * 60 * 1000 * 24);
+                            response.cookie("X_auth", token, {expires: expiryDate});
+                            response.status(200).send('<srcript>alert("로그인 성공");</script>');
+                        }
+                    });
+                    
                 }
                 
             });
@@ -106,12 +112,22 @@ app.post('/login', function(request, response) {
 app.get('/auth', auth, function(request, response) {
     
     response.status(200).json({
-        user_sn: request.user.user_sn
+        user_sn: request.user.user_sn,
+        user_id: request.user.user_id,
+        isAuth: true,
+        error: false
     });
 });
 
 app.get('/logout', auth, function(request, response){
-    account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`);
+    account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`, function(err, data) {
+        if(err) console.log("logout error \n" + err);
+        else {
+            response.clearCookie("X_auth");    //.redirect('/');
+            response.status(200).send('<srcript>alert("로그아웃");</script>');
+        } 
+    });
+    
 })
 
 app.listen(7777, function() {
