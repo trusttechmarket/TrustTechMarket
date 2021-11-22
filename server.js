@@ -59,7 +59,7 @@ app.post('/register', function(request, response) {
             if(data.length == 0) {
                 account.query('INSERT INTO user(user_id, user_pw, user_email, user_region) values(?,?,?,?)',[userID, hash, userEmail, userRegion]);
                 response.status(200).send('<srcript>alert("회원가입 성공");</script>'); 
-                request.redirect('/');
+                //request.redirect('/');
             }
             else {
                 response.status(400).send('<srcript>alert("회원가입 실패");</script>');
@@ -130,6 +130,9 @@ app.get('/logout', auth, function(request, response){
     
 })
 
+
+
 app.listen(7777, function() {
     console.log('Server Running');
+    console.log('test');
 });
