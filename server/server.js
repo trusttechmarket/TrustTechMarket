@@ -33,7 +33,7 @@ app.get('/api/hello', function(request, response) {
     response.send("안녕하세요!"); //axios
 })
 
-app.get('/board/:id', function(request, response) {
+app.get('/board/:id', auth, function(request, response) {
     var boardID = Number(request.params.id);
     var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
@@ -53,14 +53,14 @@ app.get('/board/:id', function(request, response) {
     });
 });
 
-app.post('/board/write', function(request, response) {
+app.post('/board/write', auth, function(request, response) {
     var writeJson = request.body;
     var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
     var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
     board.query(sql, datas, function(err, data) {
         if(err) {
             console.log("write error\n" + err);
-            response.status(400).send('<srcript>alert("글실패"쓰기 );</script>');
+            response.status(400).send('<srcript>alert("글쓰기 실패");</script>');
         }
         else {
             response.status(200).send('<srcript>alert("글쓰기 성공");</script>')
@@ -69,7 +69,7 @@ app.post('/board/write', function(request, response) {
     
 });
 
-app.get('/board/edit/:id', function(request, response) {
+app.get('/board/edit/:id', auth, function(request, response) {
     var boardID = Number(request.params.id);
     var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
@@ -89,7 +89,7 @@ app.get('/board/edit/:id', function(request, response) {
     });
 });
 
-app.post('/board/update/:id', function(request, response) {
+app.post('/board/update/:id', auth, function(request, response) {
     var updateJson = request.body;
     var boardID = Number(request.params.id);
     var datas = [updateJson.title, updateJson.contents, updateJson.picture, updateJson.price, updateJson.region, boardID];
@@ -131,8 +131,8 @@ app.post('/register', function(request, response) {
 });
 
 app.post('/login', function(request, response) {
-    var userID = request.body.user_id;
-    var userPW = request.body.user_pw;
+    var userID = request.body.userID;
+    var userPW = request.body.userPW;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     
     account.query(sql, function(err, data) {
