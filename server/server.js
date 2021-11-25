@@ -30,17 +30,73 @@ app.use(cookieParser());
 
 
 app.get('/api/hello', function(request, response) {
-    response.send("안녕하세요!");
+    response.send("안녕하세요!"); //axios
 })
 
 app.get('/board/:id', function(request, response) {
-    var boardID = Number(request.param('id'));
-    var sql = `SELECT * FROM board WHERE Post_SN = ${boardID}`;
+    var boardID = Number(request.params.id);
+    var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
         if(err) console.log("query error \n" + err);
         else {
-            response.send(`<h1>${data[0].title}</h1>`);
+            var boardJson = {
+                'boardID': data[0].post_sn,
+                'writer': data[0].writer_id,
+                'region': data[0].writer_region,
+                'title': data[0].title,
+                'contents': data[0].description,
+                'picture': data[0].picture_url,
+                'price': data[0].price,
+            };
+            response.send(boardJson);
         }
+    });
+});
+
+app.post('/board/write', function(request, response) {
+    var writeJson = request.body;
+    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
+    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
+    board.query(sql, datas, function(err, data) {
+        if(err) {
+            console.log("write error\n" + err);
+            response.status(400).send('<srcript>alert("글실패"쓰기 );</script>');
+        }
+        else {
+            response.status(200).send('<srcript>alert("글쓰기 성공");</script>')
+        }
+    });
+    
+});
+
+app.get('/board/edit/:id', function(request, response) {
+    var boardID = Number(request.params.id);
+    var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
+    board.query(sql, function(err, data) {
+        if(err) console.log("query error \n" + err);
+        else {
+            var boardJson = {
+                'boardID': data[0].post_sn,
+                'writer': data[0].writer_id,
+                'region': data[0].writer_region,
+                'title': data[0].title,
+                'contents': data[0].description,
+                'picture': data[0].picture_url,
+                'price': data[0].price,
+            };
+            response.send(boardJson);
+        }
+    });
+});
+
+app.post('/board/update/:id', function(request, response) {
+    var updateJson = request.body;
+    var boardID = Number(request.params.id);
+    var datas = [updateJson.title, updateJson.contents, updateJson.picture, updateJson.price, updateJson.region, boardID];
+    var sql = 'UPDATE board SET title=(?), description=(?), picture_url=(?), price=(?), writer_region=(?) WHERE post_sn=(?)';
+    board.query(sql, datas, function(err, data) {
+        if(err) console.log("update error\n" + err);
+        
     });
 });
 
@@ -51,11 +107,6 @@ app.post('/register', function(request, response) {
     var userRegion = request.body.user_region;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     var userHashPW;
-    console.log("id: " + userID);
-    
-    
-    
-    
     
     bcrypt.hash(userPW, saltRounds, function(err, hash) {
         if(err) console.log("encrypt error \n" + err);
@@ -69,7 +120,7 @@ app.post('/register', function(request, response) {
             }
             else {
                 response.status(400).send('<srcript>alert("회원가입 실패");</script>');
-                response.redirect('/login');
+                //response.redirect('/login');
             }
         });
     });
@@ -88,14 +139,14 @@ app.post('/login', function(request, response) {
         if(err) console.log("login error \n" + err);
         if(data.length == 0) {
             response.status(400).send('<srcript>alert("로그인 실패");</script>');
-            response.redirect('/');
+            //response.redirect('/');
         }
         else {
             bcrypt.compare(userPW, data[0].user_pw, function(err, result) {
                 if(err) console.log("password error \n" + err);
                 if(!result) {
                     response.status(400).send('<srcript>alert("로그인 실패");</script>');
-                    response.redirect('/login');
+                    //response.redirect('/login');
                 }
                 else {
                     var token = jwt.sign(data[0].user_sn, auth_key)
