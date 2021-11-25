@@ -28,6 +28,11 @@ app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urle
 app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
+
+app.get('/api/hello', function(request, response) {
+    response.send("안녕하세요!");
+})
+
 app.get('/board/:id', function(request, response) {
     var boardID = Number(request.param('id'));
     var sql = `SELECT * FROM board WHERE Post_SN = ${boardID}`;
