@@ -103,8 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
-#database login
-database.js
+#ignore js file
+server/database.js
+server/test.js
 
 #react temporary
 /client

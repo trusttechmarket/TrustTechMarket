@@ -13,6 +13,7 @@ var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
+var auth_key = db.auth_key;
 
 var saltRounds = 10;
 
@@ -92,7 +93,7 @@ app.post('/login', function(request, response) {
                     response.redirect('/login');
                 }
                 else {
-                    var token = jwt.sign(data[0].user_sn, 'secretToken')
+                    var token = jwt.sign(data[0].user_sn, auth_key)
                     account.query(`UPDATE user SET token=(?) WHERE user_id = "${userID}"`, [token], function(err, data) {
                         if(err) console.log("login error2 \n" + err);
                         else {
@@ -134,5 +135,5 @@ app.get('/logout', auth, function(request, response){
 
 app.listen(7777, function() {
     console.log('Server Running');
-    console.log('test');
+    //console.log('test');
 });
