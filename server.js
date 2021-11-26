@@ -13,11 +13,9 @@ var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
+var cjs = require('cjs');
 
 var saltRounds = 10;
-
-
-
 
 
 var app = express();
