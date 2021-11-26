@@ -15,7 +15,7 @@ let auth = function(request, response, next) {
         account.query(sql, function(err, data) {
             if(err) throw err;
             if(data.length == 0) {
-                return res.json({isAuth: false, error: true})
+                return res.json({data: "로그인하세요", isAuth: false, error: true})
             }
             request.token = token;
             request.user = data[0];
