@@ -107,7 +107,7 @@ dist
 database.js
 
 #react temporary
-/client
+
 
 #ignore manifest
 goorm.manifest
