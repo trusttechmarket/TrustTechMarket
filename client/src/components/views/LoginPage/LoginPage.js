@@ -1,8 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import React, {useState} from 'react';
 import { useDispatch } from 'react-redux';
 import {loginUser} from '../../../_actions/user_action'
-import 'antd';
+
 function LoginPage(props) {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [userID, setuserID] = useState("");
+    const [userPW, setuserPW] = useState("");
 
    const dispatch = useDispatch();
 
@@ -17,11 +22,21 @@ function LoginPage(props) {
     }
     const onsubmitHandler = (event) => {
         event.preventDefault();
-        
+        //console.log(userID, userPW)
+
         let body = {
-            id: ID,
-            password: Password
+            userID : userID,
+            userPW : userPW,
+        }
+
+        dispatch(loginUser(body)).then(response => {
+            if(response.payload.loginSuccess) {
+                navigate("../", { replace: true });
             }
+            else {
+                alert('Error')
+            }
+        })
 
             dispatch(loginUser(body))
                 .then(response => {
@@ -44,9 +59,9 @@ function LoginPage(props) {
                 <label>ID</label>
                 <input type="ID" value={ID} onChange={onIDHandler}/>
                 <label>PW</label>
-                <input type="password" value={Password} onChange={onPasswordHandler}/>
-                <br/> 
-                <button>
+                <input type="password" value={userPW} onChange={onPwHandler}/>
+                <br/>
+                <button type="submit">
                     Login
                 </button>
             </form>

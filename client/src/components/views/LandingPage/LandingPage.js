@@ -1,22 +1,32 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 function LandingPage() {
-    const [recentImage, setrecentImage] = useState([]);
-    const [recentName, setrecentName] = useState([]);
-    const [populerImage, setpopulerImage] = useState([]);
-    const [populerName, setpopulerName] = useState([]);
-    
-
+    const navigate = useNavigate();
     useEffect(() => {
-        setrecentImage(['img1.png','img1.png','img1.png','img1.png','img1.png','img1.png'])
-        setpopulerImage(['img1.png','img1.png','img1.png','img1.png','img1.png','img1.png'])
-        setrecentName(['핸드폰','노트북','i마우스','i패드','맥북','스피커'])
-        setpopulerName(['i패드','핸드폰','노트북','i마우스','맥북','스피커'])
+        axios.get('/api/hello').then(response => {console.log(response)}, [])
     })
-
-
+    
+    const onClickHandler = () => {
+        axios.get('/api/logout')
+        .then(response =>{
+            if(response.data.logout) {
+                navigate("../login", { replace: true });
+            }
+            else {
+                alert("로그아웃 실패")
+            }
+        })
+    }
+    
     return (
-        <div style={{width: '100%', height: '100vh'}}>
+        <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center'
+            , width: '100%', height: '100vh'
+        }}>
+            LandingPage 랜딩페이지
+            <button onClick={onClickHandler}>로그아웃</button>
             {/* 메인 image */}
             <div style={{width: '85%', margin: '1rem auto'}}>
                 <h2> 최근 등록된 상품 </h2>
@@ -28,8 +38,6 @@ function LandingPage() {
                 {/* grid 2 */}
                 <hr/>
             </div>
-            
-
         </div>
     )
 }
