@@ -6,6 +6,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var ejs = require('ejs');
+var cjs = require('cjs');
 var http = require('http');
 var db = require('./database.js');
 var bcrypt = require('bcrypt');
@@ -13,7 +14,7 @@ var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
-var cjs = require('cjs');
+
 
 var saltRounds = 10;
 
@@ -46,9 +47,6 @@ app.post('/register', function(request, response) {
     console.log("id: " + userID);
     
     
-    
-    
-    
     bcrypt.hash(userPW, saltRounds, function(err, hash) {
         if(err) console.log("encrypt error \n" + err);
         
@@ -65,10 +63,6 @@ app.post('/register', function(request, response) {
             }
         });
     });
-    
-    
-
-    
 });
 
 app.post('/login', function(request, response) {
@@ -98,10 +92,8 @@ app.post('/login', function(request, response) {
                             response.cookie("X_auth", token, {expires: expiryDate});
                             response.status(200).send('<srcript>alert("로그인 성공");</script>');
                         }
-                    });
-                    
+                    });                 
                 }
-                
             });
         }
     });
