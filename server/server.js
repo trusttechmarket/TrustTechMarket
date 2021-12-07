@@ -14,8 +14,7 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
-var {socket} = require('socket.io');
-ㅜ
+var socket = require('socket.io');
 var saltRounds = 10;
 
 
@@ -24,7 +23,7 @@ var saltRounds = 10;
 
 var app = express();
 var server = http.createServer(app);
-var io = new socket(server);
+var io = socket(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
@@ -190,7 +189,6 @@ app.get('/api/logout', auth, function(request, response){
     
 })
 
-cd
 
 server.listen(7777, function() {
     console.log('Server Running');

@@ -10,6 +10,7 @@ import promiseMiddleware from 'redux-promise';
 import ReduxThunk from 'redux-thunk';
 import Reducer from './_reducers/index'
 
+//store 에서 미들웨어로 function과 promise 형식도 받을 수 있도록 reduxThunk, reduxPromise 활용
 const creaetStoreWithMiddlewrare = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore);
 
 ReactDOM.render(
