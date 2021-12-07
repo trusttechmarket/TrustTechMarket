@@ -108,7 +108,6 @@ server/database.js
 server/test.js
 
 #react temporary
-/client
 
 #ignore manifest
 goorm.manifest
