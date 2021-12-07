@@ -9,11 +9,11 @@ import LandingPage from './components/views/LandingPage/LandingPage';
 import LoginPage from './components/views/LoginPage/LoginPage';
 import RegisterPage from './components/views/RegisterPage/RegisterPage';
 import NavBar from './components/views/NavBar/NavBar';
-//import Auth from './hoc/auth';
+import TopPannel from './components/views/TopPannel/TopPannel';
+import { Divider } from 'antd';
 
 function App() {
   return (
-   
     <Router>
     <div>
       {/*
@@ -23,7 +23,9 @@ function App() {
         you have multiple routes, but you want only one
         of them to render at a time
       */}
-       <NavBar />
+      <TopPannel />
+      <Divider />
+      <NavBar />
       <Routes>
         <Route exact path="/" element={<LandingPage />}/>
         <Route path="/login" element={<LoginPage />}/>

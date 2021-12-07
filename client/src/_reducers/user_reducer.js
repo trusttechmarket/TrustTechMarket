@@ -4,7 +4,7 @@ import {
     AUTH_USER
 } from '../_actions/types.js';
 
-export default function (state = {}, action) {
+export default function (state ={}, action) {
     switch (action.type) {
         case LOGIN_USER:
             return {...state, loginSuccess: action.payload}

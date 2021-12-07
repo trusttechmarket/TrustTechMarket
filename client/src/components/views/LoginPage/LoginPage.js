@@ -9,13 +9,18 @@ function LoginPage(props) {
     const [userID, setuserID] = useState("");
     const [userPW, setuserPW] = useState("");
 
-    const onIdHandler = (event) => {
-        setuserID(event.currentTarget.value)
+   const dispatch = useDispatch();
+
+    const [ID, setID] = useState("")
+    const [Password, setPassword] = useState("")
+    
+    const onIDHandler = (event) => {
+        setID(event.currentTarget.value)
     }
-    const onPwHandler = (event) => {
-        setuserPW(event.currentTarget.value)
+    const onPasswordHandler = (event) => {
+        setPassword(event.currentTarget.value)
     }
-    const onSubmitHandler = (event) => {
+    const onsubmitHandler = (event) => {
         event.preventDefault();
         //console.log(userID, userPW)
 
@@ -33,20 +38,26 @@ function LoginPage(props) {
             }
         })
 
-        //Axios post 방식으로 전달
-        // Axios.post('/login', body).then(response => {
-
-        // })
+            dispatch(loginUser(body))
+                .then(response => {
+                    if (response.payload.loginSuccess){
+                    props.history.push('/')
+                    } else{
+                        alert('Error.')
+                    }
+                })     
     }
+
     return (
         <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center'
             , width: '100%', height: '100vh'
         }}>
             <form style={{display:'flex', flexDirection: 'column'}}
-                onSubmit = {onSubmitHandler}>
+            onSubmit = {onsubmitHandler}>
+                <h2>로그인하기</h2>
                 <label>ID</label>
-                <input type="ID" value={userID} onChange={onIdHandler}/>
+                <input type="ID" value={ID} onChange={onIDHandler}/>
                 <label>PW</label>
                 <input type="password" value={userPW} onChange={onPwHandler}/>
                 <br/>

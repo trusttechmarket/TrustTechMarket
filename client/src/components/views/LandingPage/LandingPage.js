@@ -27,6 +27,17 @@ function LandingPage() {
         }}>
             LandingPage 랜딩페이지
             <button onClick={onClickHandler}>로그아웃</button>
+            {/* 메인 image */}
+            <div style={{width: '85%', margin: '1rem auto'}}>
+                <h2> 최근 등록된 상품 </h2>
+                {/* grid 1 */}
+                <hr/>
+            </div>
+            <div style={{width: '85%', margin: '1rem auto'}}>
+                <h2> 많이 찜한 상품 </h2>
+                {/* grid 2 */}
+                <hr/>
+            </div>
         </div>
     )
 }
