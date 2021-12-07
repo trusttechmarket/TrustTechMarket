@@ -14,7 +14,8 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
-
+var {socket} = require('socket.io');
+ㅜ
 var saltRounds = 10;
 
 
@@ -22,6 +23,8 @@ var saltRounds = 10;
 
 
 var app = express();
+var server = http.createServer(app);
+var io = new socket(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
@@ -33,7 +36,7 @@ app.get('/api/hello', function(request, response) {
     response.send("안녕하세요!"); //axios
 })
 
-app.get('/board/:id', auth, function(request, response) {
+app.get('/api/board/:id', auth, function(request, response) {
     var boardID = Number(request.params.id);
     var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
@@ -53,7 +56,7 @@ app.get('/board/:id', auth, function(request, response) {
     });
 });
 
-app.post('/board/write', auth, function(request, response) {
+app.post('/api/board/write', auth, function(request, response) {
     var writeJson = request.body;
     var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
     var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
@@ -69,7 +72,7 @@ app.post('/board/write', auth, function(request, response) {
     
 });
 
-app.get('/board/edit/:id', auth, function(request, response) {
+app.get('/api/board/edit/:id', auth, function(request, response) {
     var boardID = Number(request.params.id);
     var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
@@ -89,7 +92,7 @@ app.get('/board/edit/:id', auth, function(request, response) {
     });
 });
 
-app.post('/board/update/:id', auth, function(request, response) {
+app.post('/api/board/update/:id', auth, function(request, response) {
     var updateJson = request.body;
     var boardID = Number(request.params.id);
     var datas = [updateJson.title, updateJson.contents, updateJson.picture, updateJson.price, updateJson.region, boardID];
@@ -100,7 +103,7 @@ app.post('/board/update/:id', auth, function(request, response) {
     });
 });
 
-app.post('/register', function(request, response) {
+app.post('/api/register', function(request, response) {
     var userID = request.body.user_id;
     var userPW = request.body.user_pw;
     var userEmail = request.body.user_email;
@@ -130,7 +133,7 @@ app.post('/register', function(request, response) {
     
 });
 
-app.post('/login', function(request, response) {
+app.post('/api/login', function(request, response) {
     var userID = request.body.userID;
     var userPW = request.body.userPW;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
@@ -166,7 +169,7 @@ app.post('/login', function(request, response) {
     });
 });
 
-app.get('/auth', auth, function(request, response) {
+app.get('/api/auth', auth, function(request, response) {
     
     response.status(200).json({
         user_sn: request.user.user_sn,
@@ -176,7 +179,7 @@ app.get('/auth', auth, function(request, response) {
     });
 });
 
-app.get('/logout', auth, function(request, response){
+app.get('/api/logout', auth, function(request, response){
     account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`, function(err, data) {
         if(err) console.log("logout error \n" + err);
         else {
@@ -187,9 +190,9 @@ app.get('/logout', auth, function(request, response){
     
 })
 
+cd
 
-
-app.listen(7777, function() {
+server.listen(7777, function() {
     console.log('Server Running');
     //console.log('test');
 });

@@ -20,7 +20,8 @@
     "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
-    "sjs": "0.0.3"
+    "sjs": "0.0.3",
+    "socket.io": "^4.4.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
