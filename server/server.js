@@ -13,7 +13,9 @@ var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
-
+var auth_key = db.auth_key;
+var {socket} = require('socket.io');
+ㅜ
 var saltRounds = 10;
 
 
@@ -21,35 +23,93 @@ var saltRounds = 10;
 
 
 var app = express();
+var server = http.createServer(app);
+var io = new socket(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
 app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
-app.get('/board/:id', function(request, response) {
-    var boardID = Number(request.param('id'));
-    var sql = `SELECT * FROM board WHERE Post_SN = ${boardID}`;
+
+app.get('/api/hello', function(request, response) {
+    response.send("안녕하세요!"); //axios
+})
+
+app.get('/api/board/:id', auth, function(request, response) {
+    var boardID = Number(request.params.id);
+    var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
         if(err) console.log("query error \n" + err);
         else {
-            response.send(`<h1>${data[0].title}</h1>`);
+            var boardJson = {
+                'boardID': data[0].post_sn,
+                'writer': data[0].writer_id,
+                'region': data[0].writer_region,
+                'title': data[0].title,
+                'contents': data[0].description,
+                'picture': data[0].picture_url,
+                'price': data[0].price,
+            };
+            response.send(boardJson);
         }
     });
 });
 
-app.post('/register', function(request, response) {
+app.post('/api/board/write', auth, function(request, response) {
+    var writeJson = request.body;
+    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
+    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
+    board.query(sql, datas, function(err, data) {
+        if(err) {
+            console.log("write error\n" + err);
+            response.status(400).send('<srcript>alert("글쓰기 실패");</script>');
+        }
+        else {
+            response.status(200).send('<srcript>alert("글쓰기 성공");</script>')
+        }
+    });
+    
+});
+
+app.get('/api/board/edit/:id', auth, function(request, response) {
+    var boardID = Number(request.params.id);
+    var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
+    board.query(sql, function(err, data) {
+        if(err) console.log("query error \n" + err);
+        else {
+            var boardJson = {
+                'boardID': data[0].post_sn,
+                'writer': data[0].writer_id,
+                'region': data[0].writer_region,
+                'title': data[0].title,
+                'contents': data[0].description,
+                'picture': data[0].picture_url,
+                'price': data[0].price,
+            };
+            response.send(boardJson);
+        }
+    });
+});
+
+app.post('/api/board/update/:id', auth, function(request, response) {
+    var updateJson = request.body;
+    var boardID = Number(request.params.id);
+    var datas = [updateJson.title, updateJson.contents, updateJson.picture, updateJson.price, updateJson.region, boardID];
+    var sql = 'UPDATE board SET title=(?), description=(?), picture_url=(?), price=(?), writer_region=(?) WHERE post_sn=(?)';
+    board.query(sql, datas, function(err, data) {
+        if(err) console.log("update error\n" + err);
+        
+    });
+});
+
+app.post('/api/register', function(request, response) {
     var userID = request.body.user_id;
     var userPW = request.body.user_pw;
     var userEmail = request.body.user_email;
     var userRegion = request.body.user_region;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     var userHashPW;
-    console.log("id: " + userID);
-    
-    
-    
-    
     
     bcrypt.hash(userPW, saltRounds, function(err, hash) {
         if(err) console.log("encrypt error \n" + err);
@@ -59,11 +119,11 @@ app.post('/register', function(request, response) {
             if(data.length == 0) {
                 account.query('INSERT INTO user(user_id, user_pw, user_email, user_region) values(?,?,?,?)',[userID, hash, userEmail, userRegion]);
                 response.status(200).send('<srcript>alert("회원가입 성공");</script>'); 
-                request.redirect('/');
+                //request.redirect('/');
             }
             else {
                 response.status(400).send('<srcript>alert("회원가입 실패");</script>');
-                response.redirect('/login');
+                //response.redirect('/login');
             }
         });
     });
@@ -73,26 +133,26 @@ app.post('/register', function(request, response) {
     
 });
 
-app.post('/login', function(request, response) {
-    var userID = request.body.user_id;
-    var userPW = request.body.user_pw;
+app.post('/api/login', function(request, response) {
+    var userID = request.body.userID;
+    var userPW = request.body.userPW;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     
     account.query(sql, function(err, data) {
         if(err) console.log("login error \n" + err);
         if(data.length == 0) {
             response.status(400).send('<srcript>alert("로그인 실패");</script>');
-            response.redirect('/');
+            //response.redirect('/');
         }
         else {
             bcrypt.compare(userPW, data[0].user_pw, function(err, result) {
                 if(err) console.log("password error \n" + err);
                 if(!result) {
                     response.status(400).send('<srcript>alert("로그인 실패");</script>');
-                    response.redirect('/login');
+                    //response.redirect('/login');
                 }
                 else {
-                    var token = jwt.sign(data[0].user_sn, 'secretToken')
+                    var token = jwt.sign(data[0].user_sn, auth_key)
                     account.query(`UPDATE user SET token=(?) WHERE user_id = "${userID}"`, [token], function(err, data) {
                         if(err) console.log("login error2 \n" + err);
                         else {
@@ -109,7 +169,7 @@ app.post('/login', function(request, response) {
     });
 });
 
-app.get('/auth', auth, function(request, response) {
+app.get('/api/auth', auth, function(request, response) {
     
     response.status(200).json({
         user_sn: request.user.user_sn,
@@ -119,7 +179,7 @@ app.get('/auth', auth, function(request, response) {
     });
 });
 
-app.get('/logout', auth, function(request, response){
+app.get('/api/logout', auth, function(request, response){
     account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`, function(err, data) {
         if(err) console.log("logout error \n" + err);
         else {
@@ -130,6 +190,9 @@ app.get('/logout', auth, function(request, response){
     
 })
 
-app.listen(7777, function() {
+cd
+
+server.listen(7777, function() {
     console.log('Server Running');
+    //console.log('test');
 });
