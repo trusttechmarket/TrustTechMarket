@@ -1,17 +1,41 @@
 import axios from 'axios';
-import { response } from 'express';
-import LoginPage from '../components/views/LoginPage/LoginPage';
+//import { response } from 'express';
+//import LoginPage from '../components/views/LoginPage/LoginPage';
 import {
-    LOGIN_USER
+    LOGIN_USER,
+    REGISTER_USER,
+    AUTH_USER
 } from './types';
 
 export function loginUser(dataToSubmit) {
 
-    const request = axios.post('/login', body).
-    then(response => response.data)
+    const request = axios.post('/api/login', dataToSubmit)
+    .then(response => response.data)
 
     return {
         type: LOGIN_USER,
+        payload: request
+    }
+}
+
+export function registerUser(dataToSubmit) {
+
+    const request = axios.post('/api/register', dataToSubmit)
+    .then(response => response.data)
+
+    return {
+        type: REGISTER_USER,
+        payload: request
+    }
+}
+
+export function auth() {
+
+    const request = axios.get('/api/auth')
+    .then(response => response.data)
+
+    return {
+        type: AUTH_USER,
         payload: request
     }
 }

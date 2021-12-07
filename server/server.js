@@ -14,8 +14,8 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
-var {socket} = require('socket.io');
-ㅜ
+const socket = require('socket.io');
+
 var saltRounds = 10;
 
 
@@ -24,7 +24,7 @@ var saltRounds = 10;
 
 var app = express();
 var server = http.createServer(app);
-var io = new socket(server);
+const io = socket(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
@@ -104,10 +104,10 @@ app.post('/api/board/update/:id', auth, function(request, response) {
 });
 
 app.post('/api/register', function(request, response) {
-    var userID = request.body.user_id;
-    var userPW = request.body.user_pw;
-    var userEmail = request.body.user_email;
-    var userRegion = request.body.user_region;
+    var userID = request.body.userID;
+    var userPW = request.body.userPW;
+    var userEmail = request.body.userEmail;
+    var userRegion = request.body.userRegion;
     var sql = `SELECT * FROM user WHERE user_id = "${userID}"`;
     var userHashPW;
     
@@ -117,12 +117,12 @@ app.post('/api/register', function(request, response) {
         account.query(sql, function(err, data){
             if(err) console.log("register error \n" + err);
             if(data.length == 0) {
-                account.query('INSERT INTO user(user_id, user_pw, user_email, user_region) values(?,?,?,?)',[userID, hash, userEmail, userRegion]);
-                response.status(200).send('<srcript>alert("회원가입 성공");</script>'); 
+                account.query('INSERT INTO user(user_id, user_pw, user_email, user_region, del) values(?,?,?,?,0)',[userID, hash, userEmail, userRegion]);
+                response.status(200).json({register: true}); 
                 //request.redirect('/');
             }
             else {
-                response.status(400).send('<srcript>alert("회원가입 실패");</script>');
+                response.status(400).send("회원가입 실패");
                 //response.redirect('/login');
             }
         });
@@ -146,19 +146,22 @@ app.post('/api/login', function(request, response) {
         }
         else {
             bcrypt.compare(userPW, data[0].user_pw, function(err, result) {
-                if(err) console.log("password error \n" + err);
+                if(err) console.log("bcrypt error \n" + err);
                 if(!result) {
                     response.status(400).send('<srcript>alert("로그인 실패");</script>');
                     //response.redirect('/login');
                 }
                 else {
-                    var token = jwt.sign(data[0].user_sn, auth_key)
+                    var token = jwt.sign(data[0].user_sn, auth_key);
+                    userSn = data[0].user_sn
                     account.query(`UPDATE user SET token=(?) WHERE user_id = "${userID}"`, [token], function(err, data) {
                         if(err) console.log("login error2 \n" + err);
                         else {
                             var expiryDate = new Date( Date.now() + 60 * 60 * 1000 * 24);
-                            response.cookie("X_auth", token, {expires: expiryDate});
-                            response.status(200).send('<srcript>alert("로그인 성공");</script>');
+                            response.cookie("X_auth", token, {expires: expiryDate})
+                            .status(200)
+                            .json({loginSuccess: true, userId: userSn});
+                            //response.status(200).send("로그인 성공");
                         }
                     });
                     
@@ -174,8 +177,14 @@ app.get('/api/auth', auth, function(request, response) {
     response.status(200).json({
         user_sn: request.user.user_sn,
         user_id: request.user.user_id,
+        isAdmin: false,
         isAuth: true,
         error: false
+        /*
+        role: request.user.role,
+        isAdmin: request.user.isAdmin,
+        
+        */
     });
 });
 
@@ -183,14 +192,13 @@ app.get('/api/logout', auth, function(request, response){
     account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`, function(err, data) {
         if(err) console.log("logout error \n" + err);
         else {
-            response.clearCookie("X_auth");    //.redirect('/');
-            response.status(200).send('<srcript>alert("로그아웃");</script>');
+            response.clearCookie("X_auth").json({logout: true});    //.redirect('/');
+            //response.status(200).send('<srcript>alert("로그아웃");</script>');
         } 
     });
     
 })
 
-cd
 
 server.listen(7777, function() {
     console.log('Server Running');
