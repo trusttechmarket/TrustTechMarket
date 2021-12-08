@@ -30,7 +30,7 @@ function LoginPage(props) {
                 navigate("../", { replace: true });
             }
             else {
-                alert('Error')
+                console.log(response.payload)
             }
         })    
     }
