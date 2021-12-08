@@ -13,6 +13,7 @@ import TopPannel from './components/views/TopPannel/TopPannel';
 import BoardlistPage from './components/views/BoardPage/BoardlistPage';
 import { Divider } from 'antd';
 import BoardwritePage from './components/views/BoardPage/BoardwritePage';
+import Chat from './components/views/Chat/Chat'
 import Auth from './hoc/auth';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <Route path="/register" element={Auth(RegisterPage, false)}/>
         <Route path="/board" element={<BoardlistPage />}/>
         <Route path="/board/update" element={<BoardwritePage />}/>
+        <Route path="/chat" element={Auth(Chat, true)}/>
       </Routes>
     </div>
   </Router>
