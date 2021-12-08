@@ -7,7 +7,7 @@ function BoardwritePage() {
     const navigate = useNavigate();
     const [postTitle, setpostTitle] = useState("");
     const [postImage, setPostImage] = useState("");
-    //context도 정의
+    const [postContext, setpostContext] = useState("");
 
     const onTitleHandler = (event) => {
         setpostTitle(event.currentTarget.value)
@@ -15,11 +15,15 @@ function BoardwritePage() {
     const onImageHandler = (event) => {
         setPostImage(event.currentTarget.value)
     }
+    const onContextHandler = (event) => {
+        setpostContext(event.currentTarget.value)
+    }
     
 
-    let body ={
+    let body = {
         postTitle : postTitle,
         postImage : postImage,
+        postContext : postContext,
     }
 
     
@@ -34,6 +38,7 @@ function BoardwritePage() {
                     <br/>
                     <label>이미지 선택</label>
                     <input type="file" value={postImage} onChange={onImageHandler}></input>
+                    <input type="context" value={postContext} onChange={onContextHandler}/>
                 </form>
                 <button type="submit">글 작성</button>
                 </div>
