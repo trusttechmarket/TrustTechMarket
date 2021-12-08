@@ -11,7 +11,7 @@ export default function (SpecificComponent, option, adminRoute = null) {
         useEffect(() => {
             dispatch(auth()).then(response => {
                 
-                if(response.payload.isAuth) {
+                if(!response.payload.isAuth) {
                     //로그인하지 않은 상태
                     if(option) {
                         navigate("../login", { replace: true });
@@ -23,7 +23,7 @@ export default function (SpecificComponent, option, adminRoute = null) {
                         navigate("../", { replace: true });
                     }
                     else {
-                        if(option == false) {
+                        if(option === false) {
                             navigate("../", { replace: true });
                         }
                     }
@@ -32,11 +32,10 @@ export default function (SpecificComponent, option, adminRoute = null) {
             
         })
         
-        return (
-        <SpecificComponent {...props} /> )
+        return <SpecificComponent {...props} />;
     }
     
     
     
-    return AuthenticationCheck
+    return <AuthenticationCheck />;
 }
