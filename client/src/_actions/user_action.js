@@ -1,10 +1,4 @@
 import axios from 'axios';
-<<<<<<< HEAD
-
-=======
-//import { response } from 'express';
-//import LoginPage from '../components/views/LoginPage/LoginPage';
->>>>>>> refs/remotes/origin/main
 import {
     LOGIN_USER,
     REGISTER_USER,
@@ -13,12 +7,8 @@ import {
 
 export function loginUser(dataToSubmit) {
 
-<<<<<<< HEAD
-    const request = axios.post('/api/users/login', dataToSubmit).then(response => response.data)
-=======
     const request = axios.post('/api/login', dataToSubmit)
     .then(response => response.data)
->>>>>>> refs/remotes/origin/main
 
     return {
         type: LOGIN_USER,
