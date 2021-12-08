@@ -32,7 +32,7 @@ function LoginPage(props) {
             else {
                 alert('Error')
             }
-        })  
+        })    
     }
 
     return (
