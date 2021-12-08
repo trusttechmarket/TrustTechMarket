@@ -7,7 +7,7 @@ function LandingPage() {
     useEffect(() => {
         axios.get('/api/hello').then(response => {console.log(response)}, [])
     })
-    
+    /*
     const onClickHandler = () => {
         axios.get('/api/logout')
         .then(response =>{
@@ -18,7 +18,7 @@ function LandingPage() {
                 alert("로그아웃 실패")
             }
         })
-    }
+    }*/
     
     return (
         <div>

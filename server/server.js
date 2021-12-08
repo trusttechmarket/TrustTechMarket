@@ -114,7 +114,7 @@ app.post('/api/register', function(request, response) {
         
         account.query(sql, function(err, data){
             if(err) console.log("register error \n" + err);
-            if(data.length == 0) {
+            if(data[0].length == 0) {
                 account.query('INSERT INTO user(user_id, user_pw, user_email, user_region, del) values(?,?,?,?,0)',[userID, hash, userEmail, userRegion]);
                 response.status(200).json({register: true}); 
                 //request.redirect('/');
@@ -159,7 +159,7 @@ app.post('/api/login', function(request, response) {
                             response.cookie("X_auth", token, {expires: expiryDate})
                             .status(200)
                             .json({loginSuccess: true, userId: userSn});
-                            response.status(200).send("로그인 성공");
+                            //response.status(200).send("로그인 성공");
                         }
                     });
                     
