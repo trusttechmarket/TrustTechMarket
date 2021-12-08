@@ -1,4 +1,6 @@
 import axios from 'axios';
+//import { response } from 'express';
+//import LoginPage from '../components/views/LoginPage/LoginPage';
 import {
     LOGIN_USER,
     REGISTER_USER,

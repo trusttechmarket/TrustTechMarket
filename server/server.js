@@ -14,10 +14,8 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
-const socket = require('socket.io');
-
+const socket = require('socket.io')
 var saltRounds = 10;
-
 
 
 
@@ -161,7 +159,7 @@ app.post('/api/login', function(request, response) {
                             response.cookie("X_auth", token, {expires: expiryDate})
                             .status(200)
                             .json({loginSuccess: true, userId: userSn});
-                            //response.status(200).send("로그인 성공");
+                            response.status(200).send("로그인 성공");
                         }
                     });
                     
@@ -196,7 +194,6 @@ app.get('/api/logout', auth, function(request, response){
             //response.status(200).send('<srcript>alert("로그아웃");</script>');
         } 
     });
-    
 })
 
 

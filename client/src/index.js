@@ -16,8 +16,7 @@ const creaetStoreWithMiddlewrare = applyMiddleware(promiseMiddleware, ReduxThunk
 ReactDOM.render(
   <Provider
     store={creaetStoreWithMiddlewrare(Reducer,
-      window.__REDUX_DEVTOOLS_EXTENTSION__ &&
-      window.__REDUX_DEVTOOLS_EXTENTSION__()
+      window.__REDUX_DEVTOOLS_EXTENSION__ / window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       )}
   >
     <App />
@@ -29,3 +28,4 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+

@@ -7,18 +7,14 @@ function LoginPage(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userID, setuserID] = useState("");
-    const [userPW, setuserPW] = useState("");
+    const [userPW, setuserPW] = useState("")
 
-   const dispatch = useDispatch();
 
-    const [ID, setID] = useState("")
-    const [Password, setPassword] = useState("")
-    
     const onIDHandler = (event) => {
-        setID(event.currentTarget.value)
+        setuserID(event.currentTarget.value)
     }
-    const onPasswordHandler = (event) => {
-        setPassword(event.currentTarget.value)
+    const onPWHandler = (event) => {
+        setuserPW(event.currentTarget.value)
     }
     const onsubmitHandler = (event) => {
         event.preventDefault();
@@ -38,14 +34,14 @@ function LoginPage(props) {
             }
         })
 
-            dispatch(loginUser(body))
-                .then(response => {
-                    if (response.payload.loginSuccess){
-                    props.history.push('/')
-                    } else{
-                        alert('Error.')
-                    }
-                })     
+        dispatch(loginUser(body))
+            .then(response => {
+                if (response.payload.loginSuccess){
+                props.history.push('/')
+                } else{
+                    alert('Error.')
+                }
+            })     
     }
 
     return (
@@ -57,9 +53,9 @@ function LoginPage(props) {
             onSubmit = {onsubmitHandler}>
                 <h2>로그인하기</h2>
                 <label>ID</label>
-                <input type="ID" value={ID} onChange={onIDHandler}/>
+                <input type="ID" value={userID} onChange={onIDHandler}/>
                 <label>PW</label>
-                <input type="password" value={userPW} onChange={onPwHandler}/>
+                <input type="password" value={userPW} onChange={onPWHandler}/>
                 <br/>
                 <button type="submit">
                     Login
