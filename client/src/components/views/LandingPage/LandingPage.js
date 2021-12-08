@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 function LandingPage() {
@@ -21,24 +21,21 @@ function LandingPage() {
     }
     
     return (
-        <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center'
-            , width: '100%', height: '100vh'
-        }}>
-            LandingPage 랜딩페이지
-            <button onClick={onClickHandler}>로그아웃</button>
+        <div>
+            {/* LandingPage 랜딩페이지 */}
+            {/* <button onClick={onClickHandler}>로그아웃</button> */}
             {/* 메인 image */}
             <div style={{width: '85%', margin: '1rem auto'}}>
-                <h2> 최근 등록된 상품 </h2>
+                <h2> 실시간 HOT 매물 </h2>
+                <div style={{maxWidth:'500px', background:'#EEE'}}>
+                    <h2 style={{color: 'black'}}> 품목 Title </h2>
+                    <p style={{color: 'black', fontSize: '1rem'}}>description</p>
+                </div>
+                <p><Link to="/board">더보기</Link></p>
                 {/* grid 1 */}
                 <hr/>
             </div>
-            <div style={{width: '85%', margin: '1rem auto'}}>
-                <h2> 많이 찜한 상품 </h2>
-                {/* grid 2 */}
-                <hr/>
-            </div>
-        </div>
+     </div>
     )
 }
 
