@@ -29,10 +29,20 @@ app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urle
 app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
+io.on('connection', socket => {
+    socket.on('send message', (item) => {
+        const msg = item.name + ":" + item.message;
+        console.log(msg);
+        io.emit('receive message', {name:item.name, message:item.message});
+    });
+    socket.on('disconnect', () => {
+        console.log('disconnected', socket.id);
+    });
+});
 
 app.get('/api/hello', function(request, response) {
-    response.send("안녕하세요!"); //axios
-})
+    response.send("환영합니다!"); //axios
+});
 
 app.get('/api/board/:id', auth, function(request, response) {
     var boardID = Number(request.params.id);
@@ -119,7 +129,7 @@ app.post('/api/register', function(request, response) {
                 //request.redirect('/');
             }
             else {
-                response.status(400).send("회원가입 실패");
+                response.status(400).json({register: false, error: "회원가입 실패"});
                 //response.redirect('/login');
             }
         });
@@ -135,14 +145,14 @@ app.post('/api/login', function(request, response) {
     account.query(sql, function(err, data) {
         if(err) console.log("login error \n" + err);
         if(data.length == 0) {
-            response.status(400).send('<srcript>alert("로그인 실패");</script>');
+            response.status(400).json({loginSuccess: false, error: '로그인 실패, 아이디 없음'});
             //response.redirect('/');
         }
         else {
             bcrypt.compare(userPW, data[0].user_pw, function(err, result) {
                 if(err) console.log("bcrypt error \n" + err);
                 if(!result) {
-                    response.status(400).send('<srcript>alert("로그인 실패");</script>');
+                    response.status(400).json({loginSuccess: false, error: '로그인 실패'});
                     //response.redirect('/login');
                 }
                 else {
@@ -152,9 +162,10 @@ app.post('/api/login', function(request, response) {
                         if(err) console.log("login error2 \n" + err);
                         else {
                             var expiryDate = new Date( Date.now() + 60 * 60 * 1000 * 24);
+                            response.cookie("X_userID", userID, {expires: expiryDate});
                             response.cookie("X_auth", token, {expires: expiryDate})
                             .status(200)
-                            .json({loginSuccess: true, userId: userSn});
+                            .json({loginSuccess: true, userSn: userSn});
                             //response.status(200).send("로그인 성공");
                         }
                     });
@@ -186,6 +197,7 @@ app.get('/api/logout', auth, function(request, response){
     account.query(`UPDATE user SET token='' WHERE user_sn = ${request.user.user_sn}`, function(err, data) {
         if(err) console.log("logout error \n" + err);
         else {
+            response.clearCookie("X_userID");
             response.clearCookie("X_auth").json({logout: true});    //.redirect('/');
             //response.status(200).send('<srcript>alert("로그아웃");</script>');
         } 

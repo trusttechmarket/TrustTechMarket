@@ -30,7 +30,7 @@ function LoginPage(props) {
                 navigate("../", { replace: true });
             }
             else {
-                alert('Error');
+                alert('Error')
             }
         })  
     }
