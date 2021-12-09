@@ -1,24 +1,29 @@
+import axios from 'axios';
 import React, {useState} from 'react'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 // import { Button,Form, Row, Col} from 'react-bootstrap';
 import {writePost} from '../../../_actions/board_action';
-
+import '../../utils/FileUploader/fileuploader.css';
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer, toast } from 'react-toastify';
 
 function BoardwritePage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [postTitle, setpostTitle] = useState("");
-    const [postImage, setpostImage] = useState("");
+    const [postImages, setpostImages] = useState(null);
+    const [postImageName, setpostImageName] = useState();
     const [postContext, setpostContext] = useState("");
     const [postPrice, setpostPrice] = useState(0);
-    
+
 
     const onTitleHandler = (event) => {
         setpostTitle(event.currentTarget.value)
     }
     const onImageHandler = (event) => {
-        setpostImage(event.currentTarget.value)
+        setpostImages(event.currentTarget.files)
+        setpostImageName(event.currentTarget.files[0].name)
     }
     const onContextHandler = (event) => {
         setpostContext(event.currentTarget.value)
@@ -28,30 +33,40 @@ function BoardwritePage() {
     }
     const onSubmitHandler = (event) => {
         event.preventDefault();
-        //이게 왜 안될까 슈발
-        //데이터베이스에 보내지지도 않으며 현재 navigation도 꺼놨음
-        // Bootstrap 쓰지말고 걍 Input이랑 form 으로 바꿔서 해보자.
+        
         let body = {
             writer : 'writer',
             region : 'seoul',
             title : postTitle, 
-            picture : postImage,
+            picture : postImageName,
             contents : postContext,
             price : postPrice,
         }
-
         console.log(body);
+
+        const data = new FormData();
+        for (let i = 0; i < postImages.length; i++) {
+            data.append('file', postImages[i]);
+        }
+        
+
+        //이미지 전송
+        axios.post('/api/board/upload', data).then((e) => {
+        })
+        .catch((e) => {
+            console.error('Error',e)
+        })
 
         dispatch(writePost(body)).then(response => {
             if(response.payload.writepostSuccess) {
-                console.log('전달 성공');
-                navigate("../board", {replace: true});
+                toast.success('Upload Success');
+                navigate("../board",{replace: true});
             }
             else {
                 alert('Error')
             }
         })
-    }
+    };
 
     
 
@@ -70,13 +85,17 @@ function BoardwritePage() {
                     <input type="text" placeholder="지역" readOnly />
                     <label>글 내용</label>
                     <input as="textarea" rows={12} value={postContext} onChange={onContextHandler}/>
-                    <label>사진 올리기</label>
-                    <input type="file" multiple value={postImage} onChange={onImageHandler}/>
+                        <div class="form-group files">
+                            <label>Upload Your File </label>
+                            <input type="file" class="form-control" multiple onChange={onImageHandler}/>
+                        </div>
+                        
                     <label>판매 금액</label>
                     <input size ="lg" type="text" placeholder="판매 금액" value={postPrice} onChange={onPriceHandler}/>
                     <button variant="primary" type="submit">
                         글 올리기
                     </button>
+                    <ToastContainer />
                 </form>
             </div>
         </div>
