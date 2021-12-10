@@ -15,6 +15,7 @@ var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
 var saltRounds = 10;
+const multer = require('multer');
 
 
 var app = express();
@@ -47,6 +48,25 @@ app.get('/api/board/:id', auth, function(request, response) {
         }
     });
 });
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'server/public/images')
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+});
+const upload = multer({storage}).array('file');
+app.post('/api/board/upload', (req, res) => {
+    upload(req, res, (err) => {
+        if(err) {
+            console.log(err)
+            return res.status(500).json(err)
+        }
+        return res.status(200).send(req.files)
+    })
+})
 
 app.post('/api/board/write', function(request, response) {
     var writeJson = request.body;
