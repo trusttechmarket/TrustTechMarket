@@ -14,6 +14,7 @@ import BoardlistPage from './components/views/BoardPage/BoardlistPage';
 import { Divider } from 'antd';
 import BoardwritePage from './components/views/BoardPage/BoardwritePage';
 import Auth from './hoc/auth';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {
   return (
@@ -30,10 +31,10 @@ function App() {
       <Divider />
       <NavBar />
         <Routes>
-          /*
+          {/*
           각 페이지마다 로그인 여부를 확인하기 위해 Auth(페이지, 로그인상태, 어드민권한)활용
           로그인상태가 false이면 로그인 한 경우에는 접근 불가, null은 상관없음, true은 로그인해야 접근 가능
-          */
+          */}
           <Route exact path="/" element={Auth(LandingPage, null)}/>
           <Route path="/login" element={Auth(LoginPage, false)}/>
           <Route path="/register" element={Auth(RegisterPage, false)}/>

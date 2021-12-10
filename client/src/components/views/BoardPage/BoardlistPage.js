@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 function BoardPage() {
     //auth user data를 갖고있어야함
 
-
+    
     return (
         //게시판 불러오기 페이지
         <div>
@@ -20,7 +20,7 @@ function BoardPage() {
                     </ol>
                 </div>
                 <hr/>
-                <button><Link to="/board/update">글 작성하러 가기</Link></button>
+                <button><Link to="/board/write">글 작성하러 가기</Link></button>
             </div>
         </div>
     )

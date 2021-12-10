@@ -16,7 +16,6 @@ var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
 var saltRounds = 10;
 
-
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
 app.use(bodyParser.json());  //application/json
@@ -64,7 +63,7 @@ app.get('/api/board/:id', auth, function(request, response) {
     });
 });
 
-app.post('/api/board/write', auth, function(request, response) {
+app.post('/api/board/write', function(request, response) {
     var writeJson = request.body;
     var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
     var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
@@ -74,10 +73,9 @@ app.post('/api/board/write', auth, function(request, response) {
             response.status(400).send('<srcript>alert("글쓰기 실패");</script>');
         }
         else {
-            response.status(200).send('<srcript>alert("글쓰기 성공");</script>')
+            response.status(200).json({writepostSuccess: true}); 
         }
     });
-    
 });
 
 app.get('/api/board/edit/:id', auth, function(request, response) {
@@ -134,12 +132,9 @@ app.post('/api/register', function(request, response) {
                 //response.redirect('/login');
             }
         });
-    });
-    
-    
-
-    
+    });    
 });
+
 
 app.post('/api/login', function(request, response) {
     var userID = request.body.userID;

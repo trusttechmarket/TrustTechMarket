@@ -29,9 +29,9 @@ function LoginPage(props) {
                 navigate("../", { replace: true });
             }
             else {
-                console.log(response.payload)
+                alert('Error')
             }
-        })    
+        })  
     }
 
     return (
