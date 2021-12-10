@@ -20,6 +20,7 @@ const multer = require('multer');
 
 
 
+
  
 var app = express();
 var server = http.createServer(app);
@@ -59,22 +60,43 @@ app.get('/api/board/:id', auth, function(request, response) {
                 'contents': data[0].description,
                 'picture': data[0].picture_url,
                 'price': data[0].price,
-            };
+            };ß
             response.send(boardJson);
         }
     });
 });
 
+app.get('/api/board', function(request, response) {
+    console.log('request 수신' + request)
+    var sqlQuery = 'SELECT * FROM board ORDER BY post_sn DESC';
+    board.query(sqlQuery, function(err, data) {
+        console.log(data);
+        let imagefiles = [];
+        for (let i = 0; i <data.length ; i++) {
+            console.log(data[i].picture1_url);
+            a = `data[${i}].picture1_url`;
+            console.log(a);
+        }
+        response.send(data);
+    })
+})
+app.get('/api/getimage', function(request, response) {
+    console.log('사진전송 reqeust 수신');
+})
+
+//사진 저장
+let d = 0; 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'server/public/images')
+    destination: (req, file, cb) => {   
+        cb(null, 'server/public/images/')
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname)
+        cb(null, d + file.originalname)
     }
 });
 const upload = multer({storage}).array('file');
 app.post('/api/board/upload', (req, res) => {
+    d = Date.now()+'-';
     upload(req, res, (err) => {
         if(err) {
             console.log(err)
@@ -86,8 +108,8 @@ app.post('/api/board/upload', (req, res) => {
 
 app.post('/api/board/write', function(request, response) {
     var writeJson = request.body;
-    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.picture, writeJson.price, 0];
-    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, picture_url, price, del) values(?,?,?,?,?,?,?)';
+    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.price, d+writeJson.picture1, d+writeJson.picture2, d+writeJson.picture3,d+writeJson.picture4, d+writeJson.picture5, 1];
+    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, price, picture1_url, picture2_url,picture3_url,picture4_url,picture5_url,del) values(?,?,?,?,?,?,?,?,?,?,?)';
     board.query(sql, datas, function(err, data) {
         if(err) {
             console.log("write error\n" + err);
