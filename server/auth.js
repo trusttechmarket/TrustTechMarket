@@ -9,6 +9,10 @@ let auth = function(request, response, next) {
     
     let token = request.cookies.X_auth;
     
+    if(token == undefined) {
+        return response.json({data: "로그인하세요", isAuth: false, error: true})
+    }
+    
     jwt.verify(token, auth_key, function(err, decoded) {
         var sql = `SELECT * FROM user WHERE user_sn = ${decoded}`;
         account.query(sql, function(err, data) {

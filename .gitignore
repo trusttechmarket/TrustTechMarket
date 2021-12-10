@@ -111,3 +111,6 @@ server/test.js
 
 #ignore manifest
 goorm.manifest
+
+#.vscode
+.vscode/
