@@ -51,10 +51,6 @@ function RegisterPage(props) {
             }
         })
 
-        //Axios post 방식으로 전달
-        // Axios.post('/login', body).then(response => {
-
-        // })
     }
     return (
         <div style={{
