@@ -16,28 +16,13 @@ var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
 var saltRounds = 10;
 
+
+var app = express();
+const server = http.createServer(app);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
 app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
-
-io.on('connect', socket => {
-    console.log('connected ', socket.id);
-    /*
-    socket.on('join', (roomID) => {
-        console.log(roomID + " join\n");
-        socket.join(roomID);
-    });
-    */
-    socket.on('send message', (item) => {
-        const msg = item.name + ":" + item.message;
-        console.log(msg);
-        io.emit('receive message', {name:item.name, message:item.message});
-    });
-    socket.on('disconnect', () => {
-        console.log('disconnected', socket.id);
-    });
-});
 
 app.get('/api/hello', function(request, response) {
     response.send("환영합니다!"); //axios
