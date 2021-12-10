@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
-import {Link, useNavigate } from "react-router-dom";
+import {Link } from "react-router-dom";
 import axios from 'axios';
 
 function LandingPage() {
-    const navigate = useNavigate();
     useEffect(() => {
         axios.get('/api/hello').then(response => {console.log(response)}, [])
     })

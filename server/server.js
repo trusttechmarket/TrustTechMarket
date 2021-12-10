@@ -14,22 +14,22 @@ var account = mysql.createConnection(db.accountDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
-const socket = require('socket.io')
 var saltRounds = 10;
 
-
-
-
-var app = express();
-var server = http.createServer(app);
-const io = socket(server);
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended : true})); //application/x-www-form-urlencoded
 app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
-io.on('connection', socket => {
+io.on('connect', socket => {
+    console.log('connected ', socket.id);
+    /*
+    socket.on('join', (roomID) => {
+        console.log(roomID + " join\n");
+        socket.join(roomID);
+    });
+    */
     socket.on('send message', (item) => {
         const msg = item.name + ":" + item.message;
         console.log(msg);
@@ -169,7 +169,7 @@ app.post('/api/login', function(request, response) {
                             response.cookie("X_userID", userID, {expires: expiryDate});
                             response.cookie("X_auth", token, {expires: expiryDate})
                             .status(200)
-                            .json({loginSuccess: true, userSn: userSn});
+                            .json({loginSuccess: true, userID: userID});
                             //response.status(200).send("로그인 성공");
                         }
                     });

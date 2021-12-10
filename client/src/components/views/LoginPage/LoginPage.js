@@ -7,8 +7,7 @@ function LoginPage(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userID, setuserID] = useState("");
-    const [userPW, setuserPW] = useState("")
-
+    const [userPW, setuserPW] = useState("");
 
     const onIDHandler = (event) => {
         setuserID(event.currentTarget.value)
