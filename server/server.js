@@ -11,6 +11,7 @@ var db = require('./database.js');
 var bcrypt = require('bcrypt');
 var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
+var comment = mysql.createConnection(db.commentDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
@@ -26,7 +27,8 @@ app.use(bodyParser.json());  //application/json
 app.use(cookieParser());
 
 app.get('/api/hello', function(request, response) {
-    response.send("환영합니다!"); //axios
+    var userID = request.cookies.X_userID;
+    response.send(userID + "님 환영합니다!"); //axios
 });
 
 app.get('/api/board/:id', auth, function(request, response) {
@@ -208,6 +210,54 @@ app.get('/api/logout', auth, function(request, response){
     });
 })
 
+app.post('/api/comment/saveComment', function(request, response) {
+    var content = request.body.content;
+    var writer = request.body.writer;
+    var postID = request.body.postID;
+    var responseTo = request.body.responseTo;
+    var time = new Date();
+    var datas = [writer, postID, content, responseTo, time];
+    var sqlInsert = 'INSERT INTO comment(writer_id, post_sn, content, responseTo, time) values(?,?,?,?,?)';
+    var sqlSelect = 'SELECT * FROM comment WHERE comment_sn = (?)';
+    comment.query(sqlInsert, datas, function(err, data) {
+        if(err) {
+            console.log("comment save error\n", err);
+            response.json({success: false, err});
+        }
+        else {
+            comment.query(sqlSelect, [data.insertId], function(err2, result) {
+                if(err2) {
+                    console.log("comment load error\n", err2);
+                    response.json({success: false, err2});
+                }
+                else {
+                    response.status(200).json({success: true, result, data});
+                }
+                
+        })
+        }
+        
+        //data.insertId
+        
+    });
+    
+    
+    
+})
+
+app.post('/api/comment/getComments', function(request, response) {
+    var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
+    var postID = request.body.postID
+    comment.query(sqlSelect, [postID], function(err, data) {
+        if(err) {
+            console.log("comment load error\n", err);
+            response.json({success: false, err});
+        }
+        else {
+            response.status(200).json({success: true, data});
+        }
+    })
+})
 
 server.listen(7777, function() {
     console.log('Server Running');

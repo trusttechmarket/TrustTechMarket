@@ -11,6 +11,7 @@ import RegisterPage from './components/views/RegisterPage/RegisterPage';
 import NavBar from './components/views/NavBar/NavBar';
 import TopPannel from './components/views/TopPannel/TopPannel';
 import BoardlistPage from './components/views/BoardPage/BoardlistPage';
+import BoardunitPage from './components/views/BoardPage/BoardunitPage';
 import { Divider } from 'antd';
 import BoardwritePage from './components/views/BoardPage/BoardwritePage';
 import Auth from './hoc/auth';
@@ -39,7 +40,8 @@ function App() {
           <Route path="/login" element={Auth(LoginPage, false)}/>
           <Route path="/register" element={Auth(RegisterPage, false)}/>
           <Route path="/board" element={<BoardlistPage />}/>
-          <Route path="/board/update" element={<BoardwritePage />}/>
+          <Route path="/board/:id" element={Auth(BoardunitPage, true)}/>
+          <Route path="/board/write" element={<BoardwritePage />}/>
         </Routes>
     </div>
   </Router>
