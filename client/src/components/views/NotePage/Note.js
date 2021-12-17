@@ -42,7 +42,7 @@ function Note() {
         var value = v;
         console.log(value);
         var variables = {
-            id: user.userData?.user_id
+            id: user.userData.user_id
         };
         
         if(value == "Receive") {
