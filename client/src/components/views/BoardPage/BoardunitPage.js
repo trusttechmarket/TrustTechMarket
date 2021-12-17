@@ -33,6 +33,9 @@ function BoardunitPage(props) {
     
         <div>
             bordunit;
+            
+            
+            
             <Comment refreshFunction={refreshFunction} commentLists={Comments} postID={postID} />
         </div>
         

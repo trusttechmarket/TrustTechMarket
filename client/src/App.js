@@ -14,6 +14,8 @@ import BoardlistPage from './components/views/BoardPage/BoardlistPage';
 import BoardunitPage from './components/views/BoardPage/BoardunitPage';
 import { Divider } from 'antd';
 import BoardwritePage from './components/views/BoardPage/BoardwritePage';
+import NotePage from './components/views/NotePage/Note';
+import SendNote from './components/views/NotePage/SendNote';
 import Auth from './hoc/auth';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -42,6 +44,8 @@ function App() {
           <Route path="/board" element={<BoardlistPage />}/>
           <Route path="/board/:id" element={Auth(BoardunitPage, true)}/>
           <Route path="/board/write" element={<BoardwritePage />}/>
+          <Route path="/note" element={Auth(NotePage, true)}/>
+          <Route path="/sendnote" element={Auth(SendNote, true)}/>
         </Routes>
     </div>
   </Router>

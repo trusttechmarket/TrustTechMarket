@@ -7,20 +7,22 @@ function ReplyComment(props) {
     useEffect(() => {
         var commentNumber = 0;
         
+        
         {props.commentLists && props.commentLists.map((comment) => {
             if(comment.responseTo === props.parentCommentId) {
                 commentNumber++;
             }
-        })}
+        })};
+        
         setChildCommentNumber(commentNumber);
-    }, [props.commentLists, props.parentCommentId])
+    }, [props.commentLists])
     
     const onHandleChange = () => {
         setOpenReplyComments(!OpenReplyComments);
     }
     
     var renderReplyComment = (parentCommentId) => 
-        props.commentLists.map((comment, index) => (
+        (props.commentLists.map((comment, index) => (
             <React.Fragment>
                 {comment.responseTo === parentCommentId &&
                     <div style={{ width: '80%', marginLeft: '40px' }}>
@@ -29,17 +31,17 @@ function ReplyComment(props) {
                     </div>
                  }
             </React.Fragment>
-        ))
+        )))
     
     return (
         <div>
             
             {ChildCommentNumber > 0 &&
-                <p style={{ fontSize: '14px', margin: 0, color: 'gray' }} onClick={onHandleChange}> {ChildCommentNumber}개의 답글보기</p>
+                <p style={{ fontSize: '14px', margin: 0, color: 'grey' }} onClick={onHandleChange}> {ChildCommentNumber}개의 답글보기</p>
             }
             
             {OpenReplyComments &&
-                renderReplyComment(props.parentCommentId) 
+                renderReplyComment(props.parentCommentId)
                 
             }
             
