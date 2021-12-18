@@ -7,6 +7,7 @@ import Axios from 'axios';
 function BoardlistPage() {
     //auth user data를 갖고있어야함
     const [boardPost, setboardPost] = useState({
+        post_sn : 0,
         title : "",
         region : "",
         price : 0,
@@ -34,17 +35,21 @@ function BoardlistPage() {
             <div style={{width: '85%', margin: '1rem auto'}}>
                 <div>
                 <h2>등록된 상품 보기</h2>
-                <Row xs={1} md={4} className="g-4">
+                <div className="d-flex justify-content-around">
+                <Row xs={1} md={4}>
                     {Array.from({ length: i }).map((_, idx) => (
                         <Col>
-                            <BoardCard Title={boardList[idx].title}
+                            <BoardCard 
+                            Post_sn={boardList[idx].post_sn}
+                            Title={boardList[idx].title}
                             Price={boardList[idx].price}
                             Contents={boardList[idx].description}
                             ImageURL={boardList[idx].picture1_url}
                             />
                         </Col>
                     ))}
-                </Row>    
+                </Row>
+                </div>    
                 </div>
                 <hr/>
                 <button><Link to="/board/write">글 작성하러 가기</Link></button>

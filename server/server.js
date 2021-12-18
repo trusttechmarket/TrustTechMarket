@@ -2,17 +2,17 @@ var fs = require('fs');
 var path = require('path');
 var mysql = require('mysql');
 var express = require('express');
-var session = require('express-session');
+// var session = require('express-session');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var ejs = require('ejs');
+// var ejs = require('ejs');
 var http = require('http');
 var db = require('./database.js');
 var bcrypt = require('bcrypt');
 var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
-var comment = mysql.createConnection(db.commentDB);
-var note = mysql.createConnection(db.noteDB);
+// var comment = mysql.createConnection(db.commentDB);
+// var note = mysql.createConnection(db.noteDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
@@ -32,8 +32,11 @@ app.get('/api/hello', function(request, response) {
     response.send(userID + "님 환영합니다!"); //axios
 });
 
-app.get('/api/board/:id', auth, function(request, response) {
+// app.get('/api/board/:id', auth, function(request, response) {
+app.get('/api/board/:id', function(request, response) {
+    console.log(request.params.id)
     var boardID = Number(request.params.id);
+    console.log(boardID);
     var sql = `SELECT * FROM board WHERE post_sn = ${boardID}`;
     board.query(sql, function(err, data) {
         if(err) console.log("query error \n" + err);
@@ -44,10 +47,16 @@ app.get('/api/board/:id', auth, function(request, response) {
                 'region': data[0].writer_region,
                 'title': data[0].title,
                 'contents': data[0].description,
-                'picture': data[0].picture_url,
+                'picture1': data[0].picture1_url,
+                'picture2': data[0].picture2_url,
+                'picture3': data[0].picture3_url,
+                'picture4': data[0].picture4_url,
+                'picture5': data[0].picture5_url,
                 'price': data[0].price,
-            };ß
+            };
             response.send(boardJson);
+            console.log(boardJson);
+            console.log('전송완료')
         }
     });
 });
@@ -56,45 +65,50 @@ app.get('/api/board', function(request, response) {
     console.log('request 수신' + request)
     var sqlQuery = 'SELECT * FROM board ORDER BY post_sn DESC';
     board.query(sqlQuery, function(err, data) {
-        console.log(data);
         let imagefiles = [];
+        // fs.readFileSync(`server/public/images/`)
         for (let i = 0; i <data.length ; i++) {
             console.log(data[i].picture1_url);
             a = `data[${i}].picture1_url`;
-            console.log(a);
+            console.log(a)
         }
         response.send(data);
     })
 })
+
 app.get('/api/getimage', function(request, response) {
-    console.log('사진전송 reqeust 수신');
+
 })
 
-//사진 저장
-let d = 0; 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {   
-        cb(null, 'server/public/images/')
-    },
-    filename: (req, file, cb) => {
-        cb(null, d + file.originalname)
-    }
-});
-const upload = multer({storage}).array('file');
 app.post('/api/board/upload', (req, res) => {
-    d = Date.now()+'-';
-    upload(req, res, (err) => {
+    var d = Date.now();
+    var storRoute = `server/public/images/${d}`;
+    if(!fs.existsSync(storRoute)) {
+        fs.mkdirSync(storRoute)
+    }
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => {   
+            cb(null, storRoute)
+        },
+        filename: (req, file, cb) => {
+            cb(null, file.originalname)
+        }
+    });
+    const upload_all = multer({storage}).array('file');
+    upload_all(req, res, (err) => {
         if(err) {
             console.log(err)
             return res.status(500).json(err)
         }
+        var upload_thumb = multer({ dest: 'server/public/thumbnail', filename: d}).single('file');
+        // upload_thumb(req.files[0]);
         return res.status(200).send(req.files)
     })
 })
 
 app.post('/api/board/write', function(request, response) {
     var writeJson = request.body;
-    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.price, d+writeJson.picture1, d+writeJson.picture2, d+writeJson.picture3,d+writeJson.picture4, d+writeJson.picture5, 1];
+    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.price, writeJson.picture1, writeJson.picture2, writeJson.picture3,writeJson.picture4, writeJson.picture5, 1];
     var sql = 'INSERT INTO board(writer_id, writer_region, title, description, price, picture1_url, picture2_url,picture3_url,picture4_url,picture5_url,del) values(?,?,?,?,?,?,?,?,?,?,?)';
     board.query(sql, datas, function(err, data) {
         if(err) {
@@ -232,54 +246,51 @@ app.get('/api/logout', auth, function(request, response){
     });
 })
 
-app.post('/api/comment/saveComment', function(request, response) {
-    var content = request.body.content;
-    var writer = request.body.writer;
-    var postID = request.body.postID;
-    var responseTo = request.body.responseTo;
-    var time = new Date();
-    var datas = [writer, postID, content, responseTo, time];
-    var sqlInsert = 'INSERT INTO comment(writer_id, post_sn, content, responseTo, time) values(?,?,?,?,?)';
-    var sqlSelect = 'SELECT * FROM comment WHERE comment_sn = (?)';
-    comment.query(sqlInsert, datas, function(err, data) {
-        if(err) {
-            console.log("comment save error\n", err);
-            response.json({success: false, err});
-        }
-        else {
-            comment.query(sqlSelect, [data.insertId], function(err2, result) {
-                if(err2) {
-                    console.log("comment load error\n", err2);
-                    response.json({success: false, err2});
-                }
-                else {
-                    response.status(200).json({success: true, result, data});
-                }
+// app.post('/api/comment/saveComment', function(request, response) {
+//     var content = request.body.content;
+//     var writer = request.body.writer;
+//     var postID = request.body.postID;
+//     var responseTo = request.body.responseTo;
+//     var time = new Date();
+//     var datas = [writer, postID, content, responseTo, time];
+//     var sqlInsert = 'INSERT INTO comment(writer_id, post_sn, content, responseTo, time) values(?,?,?,?,?)';
+//     var sqlSelect = 'SELECT * FROM comment WHERE comment_sn = (?)';
+//     comment.query(sqlInsert, datas, function(err, data) {
+//         if(err) {
+//             console.log("comment save error\n", err);
+//             response.json({success: false, err});
+//         }
+//         else {
+//             comment.query(sqlSelect, [data.insertId], function(err2, result) {
+//                 if(err2) {
+//                     console.log("comment load error\n", err2);
+//                     response.json({success: false, err2});
+//                 }
+//                 else {
+//                     response.status(200).json({success: true, result, data});
+//                 }
                 
-        })
-        }
+//         })
+//         }
         
-        //data.insertId
+//         //data.insertId
         
-    });
-    
-    
-    
-})
+//     });
+// })
 
-app.post('/api/comment/getComments', function(request, response) {
-    var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
-    var postID = request.body.postID;
-    comment.query(sqlSelect, [postID], function(err, data) {
-        if(err) {
-            console.log("comment load error\n", err);
-            response.json({success: false, err});
-        }
-        else {
-            response.status(200).json({success: true, data});
-        }
-    })
-})
+// app.post('/api/comment/getComments', function(request, response) {
+//     var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
+//     var postID = request.body.postID;
+//     comment.query(sqlSelect, [postID], function(err, data) {
+//         if(err) {
+//             console.log("comment load error\n", err);
+//             response.json({success: false, err});
+//         }
+//         else {
+//             response.status(200).json({success: true, data});
+//         }
+//     })
+// })
 
 
 
