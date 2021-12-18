@@ -1,7 +1,7 @@
 .Navul {
-    list-style:none;
-    margin:0;
-    padding:0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     align-content: center;
   }
   
@@ -10,4 +10,22 @@
     padding: 0 0 0 0;
     border : 0;
     float: left;
+  }
+
+
+
+.NavulRightInline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-content: center;
+    display: inline;
+  }
+
+.NavulRightNone {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-content: center;
+    display: none;
   }

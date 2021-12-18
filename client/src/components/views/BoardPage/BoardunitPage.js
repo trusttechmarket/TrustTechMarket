@@ -33,7 +33,7 @@ function BoardunitPage(props) {
     const refreshFunction = (newComment) => {
         setComments(Comments.concat(newComment));
     }
-
+    
     return (
         <div>
             <div style={{width : '85%', margin: '1rem auto'}}>

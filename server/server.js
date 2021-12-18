@@ -12,6 +12,7 @@ var bcrypt = require('bcrypt');
 var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
 // var comment = mysql.createConnection(db.commentDB);
+// var note = mysql.createConnection(db.noteDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
@@ -269,7 +270,7 @@ app.get('/api/logout', auth, function(request, response){
 //                     response.status(200).json({success: true, result, data});
 //                 }
                 
-//         })ß
+//         })
 //         }
         
 //         //data.insertId
@@ -279,7 +280,7 @@ app.get('/api/logout', auth, function(request, response){
 
 // app.post('/api/comment/getComments', function(request, response) {
 //     var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
-//     var postID = request.body.postID
+//     var postID = request.body.postID;
 //     comment.query(sqlSelect, [postID], function(err, data) {
 //         if(err) {
 //             console.log("comment load error\n", err);
@@ -290,6 +291,54 @@ app.get('/api/logout', auth, function(request, response){
 //         }
 //     })
 // })
+
+
+
+app.post('/api/note/sendNote', function(request, response) {
+    var sql = 'INSERT INTO note(sender, receiver, title, content, time) values(?,?,?,?,?)'
+    var sender = request.body.sender;
+    var receiver = request.body.receiver;
+    var title = request.body.title;
+    var content = request.body.content;
+    var time = new Date();
+    note.query(sql, [sender, receiver, title, content, time], function(err, data) {
+        if(err) {
+            console.log("sendNote error \n", err);
+            response.status(400).json({success: false, err});
+        }
+        else {
+            response.status(200).json({success: true});
+            console.log("note save\n");
+        }
+    })
+})
+
+app.post('/api/note/getSendNote', function(request, response) {
+    var sqlSend = 'SELECT * FROM note WHERE sender = (?)';
+    var sender = request.body.id;
+    note.query(sqlSend, [sender], function(err, data) {
+        if(err) {
+            console.log("getSendNote error", err);
+            response.status(400).json({success: false, err});
+        }
+        else {
+            response.status(200).json({success: true, data});
+        }
+    })
+})
+app.post('/api/note/getRecNote', function(request, response) {
+    var sqlSend = 'SELECT * FROM note WHERE receiver = (?)';
+    var receiver = request.body.id;
+    note.query(sqlSend, [sender], function(err, data) {
+        if(err) {
+            console.log("getRecNote error", err);
+            response.status(400).json({success: false, err});
+        }
+        else {
+            response.status(200).json({success: true, data});
+        }
+    })
+})
 
 server.listen(7777, function() {
     console.log('Server Running');
