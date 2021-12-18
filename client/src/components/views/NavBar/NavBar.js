@@ -48,7 +48,7 @@ function NavBar() {
     
     return (
         <div>
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div style={{height: '15px',display: 'flex', justifyContent: 'space-between'}}>
                 <ul className='Navul' style={{listStyleType: 'none'}}>
                     <li className='Navli'>
                         <Link to="/">Home</Link>

@@ -33,6 +33,7 @@ function App() {
       <TopPannel />
       <Divider />
       <NavBar />
+      <Divider />
         <Routes>
           {/*
           각 페이지마다 로그인 여부를 확인하기 위해 Auth(페이지, 로그인상태, 어드민권한)활용

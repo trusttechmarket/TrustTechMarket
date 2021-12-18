@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import {Link } from "react-router-dom";
 import axios from 'axios';
+import MainBanner from './sections/MainBanner';
+import {Button} from 'react-bootstrap';
 
 function LandingPage() {
     useEffect(() => {
@@ -22,17 +24,14 @@ function LandingPage() {
     
     return (
         <div>
+            <div style={{width: '100%', margin: '1rem auto', textAlign: 'center', alignItems: 'center'}}>
+            <h4>믿을 수 있는 전자제품 중고거래 플랫폼 '믿을테크마켓'</h4>  
+            <Button ><Link to="/board"><h5
+            style ={{color:'white'}}> 실시간 매물 보러가기 </h5></Link></Button>
+            <MainBanner />
             {/*<button onClick={onClickHandler}>로그아웃</button>*/}
-            메인 image
-            <div style={{width: '85%', margin: '1rem auto'}}>
-                <h2> 실시간 HOT 매물 </h2>
-                <div style={{maxWidth:'500px', background:'#EEE'}}>
-                    <h2 style={{color: 'black'}}> 품목 Title </h2>
-                    <p style={{color: 'black', fontSize: '1rem'}}>description</p>
-                </div>
-                <p><Link to="/board">더보기</Link></p>
-                {/* grid 1 */}
-                <hr/>
+            <hr/>
+            <p>이병창, 김세한</p>
             </div>
      </div>
     )

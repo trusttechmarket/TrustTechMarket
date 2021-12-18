@@ -39,6 +39,7 @@ function LoginPage(props) {
             display: 'flex', justifyContent: 'center', alignItems: 'center'
             , width: '100%', height: '100vh'
         }}>
+            <div style={{border: '5px'}}>
             <form style={{display:'flex', flexDirection: 'column'}}
             onSubmit = {onsubmitHandler}>
                 <h2>로그인하기</h2>
@@ -51,6 +52,7 @@ function LoginPage(props) {
                     Login
                 </button>
             </form>
+            </div>
         </div>
     )
 }
