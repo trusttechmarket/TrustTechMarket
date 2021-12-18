@@ -23,7 +23,6 @@
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",
-    "react-toastify": "^8.1.0",
     "sjs": "0.0.3"
   },
   "devDependencies": {
