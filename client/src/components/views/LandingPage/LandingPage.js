@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import {Link } from "react-router-dom";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
-    const navigate = useNavigate();
     useEffect(() => {
         axios.get('/api/hello').then(response => {console.log(response)}, [])
     })
     
+    /*
     const onClickHandler = () => {
         axios.get('/api/logout')
         .then(response =>{
@@ -19,11 +18,11 @@ function LandingPage() {
                 alert("로그아웃 실패")
             }
         })
-    }
+    }*/
     
     return (
         <div>
-            <button onClick={onClickHandler}>로그아웃</button>
+            {/*<button onClick={onClickHandler}>로그아웃</button>*/}
             메인 image
             <div style={{width: '85%', margin: '1rem auto'}}>
                 <h2> 실시간 HOT 매물 </h2>

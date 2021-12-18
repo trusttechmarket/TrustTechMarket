@@ -55,7 +55,7 @@ function SingleComment(props) {
             
             
             
-            {/*댓글 입력 창*/}
+            {/*댓글 입력 창(서브)*/}
             {OpenReply &&
                 <form style={{display: 'flex'}} onSubmit={onSubmit}>
                     <TextArea

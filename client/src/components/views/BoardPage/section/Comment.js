@@ -8,7 +8,6 @@ import ReplyComment from './ReplyComment';
 function Comment(props) {
     const boardID = props.postID; // 게시글 번호, boardunit에서 comment쪽으로 넘겨줘야 함.
     const user = useSelector(state => state.user);
-    //console.log(user);
     const [commentValue, setcommentValue] = useState("");
     
     const handleClick = (event) => {
@@ -39,7 +38,7 @@ function Comment(props) {
     return (
         <div>
             <br/>
-            <p> Replies</p>
+            <p> 댓글</p>
             <hr />
             
             {/* 댓글 목록*/}
@@ -47,7 +46,7 @@ function Comment(props) {
                 (!comment.responseTo && 
                  <React.Fragment>
                      <SingleComment refreshFunction={props.refreshFunction} comment={comment} postID={boardID} />
-                     <ReplyComment refreshFunction={props.refreshFunction} parentCommentId={comment.comment_sn} comment={props.commentLists} postID={boardID} />
+                     <ReplyComment refreshFunction={props.refreshFunction} parentCommentId={comment.comment_sn} commentLists={props.commentLists} postID={boardID} />
                  
                  </React.Fragment>
                 )
@@ -58,7 +57,7 @@ function Comment(props) {
             
             
             
-            {/*댓글 입력 창*/}
+            {/*댓글 입력 창(루트)*/}
             <form style={{display: 'flex'}} onSubmit={onSubmit}>
                 <textarea
                     style={{width: '100%', borderRadius:'5px'}}
