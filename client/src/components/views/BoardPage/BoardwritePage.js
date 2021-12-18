@@ -42,7 +42,7 @@ function BoardwritePage() {
 
         let body = {
             writer : 'writer',
-            region : 'seoul',
+            region : '',
             title : postTitle, 
             picture1 : '',
             picture2 : '',
