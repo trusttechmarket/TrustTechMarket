@@ -30,7 +30,7 @@ function SendNote() {
             title: Title,
             content: Content
         };
-        axios.post('/api/note/sendNote', vaiables)
+        axios.post('/api/note/sendnote', vaiables)
         .then(response => {
             if(response.data.success){
                 navigate("../note", { replace: true });
