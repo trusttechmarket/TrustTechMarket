@@ -18,6 +18,8 @@ var { auth } = require('./auth.js');
 var auth_key = db.auth_key;
 var saltRounds = 10;
 const multer = require('multer');
+const res = require('express/lib/response');
+const { type } = require('express/lib/response');
 
 
 var app = express();
@@ -61,18 +63,26 @@ app.get('/api/board', function(request, response) {
     console.log('request 수신' + request)
     var sqlQuery = 'SELECT * FROM board ORDER BY post_sn DESC';
     board.query(sqlQuery, function(err, data) {
-        let imagefiles = [];
-        // fs.readFileSync(`server/public/images/`)
-        for (let i = 0; i <data.length ; i++) {
-            console.log(data[i].image_dir);
-            a = `data[${i}].picture1_url`;
-        }
+        console.log(data);
         response.send(data);
     })
 })
 
-app.get('/api/getimage', function(request, response) {
-
+app.get('/api/getTumbnail', function(request, response) {
+    var tumbjson = {};
+    fs.readdir(path.join(__dirname,'public/images/thumbnail'), 'utf-8',(err, files)=> {
+        if (err) {
+            res.status(500);
+            throw err;
+        }
+        files.forEach(function(filename){
+            var fileData = fs.readFileSync(path.join(__dirname,'public/images/thumbnail/' + filename))
+            tumbjson[filename] = fileData;
+            console.log(tumbjson);
+        })
+        console.log('before send',tumbjson);
+        response.send(tumbjson);
+        })
 })
 
 app.post('/api/board/upload', (req, res) => {

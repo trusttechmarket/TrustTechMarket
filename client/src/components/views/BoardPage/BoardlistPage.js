@@ -6,14 +6,7 @@ import Axios from 'axios';
 
 function BoardlistPage() {
     //auth user data를 갖고있어야함
-    const [boardPost, setboardPost] = useState({
-        post_sn : 0,
-        title : "",
-        region : "",
-        price : 0,
-        contents : "",
-        pictureURL : ""
-    })
+    const [tumbnailList, settumbnailList] = useState([]);
     const [boardList, setboardList] = useState([]);
 
     useEffect(() => {
@@ -24,6 +17,10 @@ function BoardlistPage() {
         Axios.get('/api/board').then((response) => {
             console.log(response);
             setboardList(response.data)
+        })
+        Axios.get('/api/getTumbnail').then((response) => {
+            console.log(response.data);
+            settumbnailList(response.data);
         })
     }
     var i = boardList.length;
