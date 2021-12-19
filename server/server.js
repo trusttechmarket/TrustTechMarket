@@ -308,7 +308,6 @@ app.post('/api/note/sendnote', function(request, response) {
         }
         else {
             response.status(200).json({success: true});
-            console.log("note save\n");
         }
     })
 })
