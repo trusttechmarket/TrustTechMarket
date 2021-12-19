@@ -1,5 +1,6 @@
 import React from 'react'
 import { Card, Button } from 'react-bootstrap'
+import { Link } from "react-router-dom";
 
 function PostUnit(props) {
     return (
@@ -17,7 +18,7 @@ function PostUnit(props) {
                 <h3>{props.Post.price}</h3>
                 </Card.Body>
             </Card>
-            <Button>쪽지 보내기</Button>
+               <Link to="../sendnote"><Button>쪽지 보내기</Button></Link>
            </div>
         </div>
     )

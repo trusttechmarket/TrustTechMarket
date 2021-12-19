@@ -47,6 +47,7 @@ function BoardwritePage() {
             pictureDIR : d,
             contents : postContext,
             price : postPrice,
+            title : postTitle,
         }
 
         const data = new FormData();
@@ -100,7 +101,7 @@ function BoardwritePage() {
                     <Row>
                         <Col>
                             <Form.Label>작성자</Form.Label>
-                            <Form.Control type="text" placeholder="작성자" readOnly />
+                            <Form.Control type="text" placeholder={user.userData?.user_id} readOnly />
                         </Col>
                         <Col>
                             <Form.Label>거래 지역</Form.Label>
