@@ -11,12 +11,17 @@ function BoardunitPage(props) {
     const postID = param.id;
     const [Post, setPost] = useState({});
     const [Comments, setComments] = useState([]);
-    const variables= { 'postID': postID }; 
+    const variables= { 'postID': postID };
+    const [Images, setImages] = useState({})
 
     useEffect(() => {
         axios.get(`/api/board/${postID}`).then((response) => {
             console.log('응답받음',response);
             setPost(response.data)
+            axios.get(`/api/getImage/${postID}`).then((response) => {
+                console.log('응답받음',response);
+                setImages(response.data)
+            })
         })
         axios.post('/api/comment/getComments', variables)
         .then(response => {
@@ -29,15 +34,19 @@ function BoardunitPage(props) {
             }
         })
     }, [])  
-    
+    console.log('Images', Images);
+    console.log('Post', Post);
+    const Imagefiles = Object.values(Images);
+    console.log(Imagefiles);
     const refreshFunction = (newComment) => {
         setComments(Comments.concat(newComment));
     }
     
     return (
         <div>
-            <div style={{width : '85%', margin: '1rem auto'}}>
-            <ControlledCarousel />
+            <div style={{width : '85%', margin: '1rem auto', alignItems: 'center'}}>
+            <ControlledCarousel Imagefiles={Imagefiles} />
+            <br></br>
             <PostUnit Post={Post} />
             <Comment refreshFunction={refreshFunction} commentLists={Comments} postID={postID} />
             </div>

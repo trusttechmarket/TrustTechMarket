@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var mysql = require('mysql');
 var express = require('express');
@@ -15,6 +14,7 @@ var account = mysql.createConnection(db.accountDB);
 // var note = mysql.createConnection(db.noteDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
+var fs = require('fs');
 var auth_key = db.auth_key;
 var saltRounds = 10;
 const multer = require('multer');
@@ -34,7 +34,7 @@ app.get('/api/hello', function(request, response) {
     response.send(userID + "님 환영합니다!"); //axios
 });
 
-// app.get('/api/board/:id', auth, function(request, response) {
+
 app.get('/api/board/:id', function(request, response) {
     console.log(request.params.id)
     var boardID = Number(request.params.id);
@@ -58,6 +58,33 @@ app.get('/api/board/:id', function(request, response) {
         }
     });
 });
+app.get('/api/getImage/:id', function(request, response) {
+    var boardID = Number(request.params.id);
+    console.log(boardID);
+    var sql = `SELECT image_dir FROM board WHERE post_sn = ${boardID}`;
+    board.query(sql, function(err, data) {
+        
+        if(err) console.log("query error \n" + err);
+        else {
+            var dirNum = data[0].image_dir;
+            var imageJson = {};
+            fs.readdir(path.join(__dirname,`public/images/${dirNum}`), 'utf-8',(err, files)=> {
+                if (err) {
+                    res.status(500);
+                    throw err;
+                }
+                console.log(files);
+                files.forEach(function(filename){
+                    var fileData = fs.readFileSync(path.join(__dirname,`public/images/${dirNum}/` + filename), "base64")
+                    imageJson[filename] = fileData;
+                    console.log(imageJson);
+                })
+                response.send(imageJson);
+                })
+        }
+    })
+})
+
 
 app.get('/api/board', function(request, response) {
     console.log('request 수신' + request)
@@ -77,10 +104,8 @@ app.get('/api/getTumbnail', function(request, response) {
         }
         files.forEach(function(filename){
             var fileData = fs.readFileSync(path.join(__dirname,'public/images/thumbnail/' + filename))
-            tumbjson[filename] = fileData;
-            console.log(tumbjson);
+            tumbjson[filename] = fileData.toString();
         })
-        console.log('before send',tumbjson);
         response.send(tumbjson);
         })
 })
