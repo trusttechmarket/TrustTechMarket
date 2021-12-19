@@ -3,7 +3,6 @@ import React, {useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {writePost} from '../../../_actions/board_action';
-import '../../utils/FileUploader/fileuploader.css';
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer, toast } from 'react-toastify';
 import { Form, Row, Col, Button } from 'react-bootstrap';
@@ -16,16 +15,16 @@ function BoardwritePage() {
     const user = useSelector(state => state.user);
     
     const [postTitle, setpostTitle] = useState("");
-    const [postImages, setpostImages] = useState(null);
+    const [postImages, setpostImages] = useState([]);
     const [postContext, setpostContext] = useState("");
     const [postPrice, setpostPrice] = useState(0);
-    const [postRegion, setpostRegion] = useState("거래 지역");
+    const [postRegion, setpostRegion] = useState("");
 
     const onTitleHandler = (event) => {
         setpostTitle(event.currentTarget.value)
     }
     const onImageHandler = (event) => {
-        setpostImages(event.currentTarget.files)        
+        setpostImages(event.currentTarget.files)
     }
     const onContextHandler = (event) => {
         setpostContext(event.currentTarget.value)
@@ -39,74 +38,52 @@ function BoardwritePage() {
     
     const onSubmitHandler = (event) => {
         event.preventDefault();
-
+        let d = Date.now()
+        console.log(d)
         let body = {
-            writer : 'writer',
-            region : '',
-            title : postTitle, 
-            picture1 : '',
-            picture2 : '',
-            picture3 : '',
-            picture4 : '',
-            picture5 : '',
+            writer : user.userData?.user_id,
+            region : postRegion, 
+            pictureDIR : d,
             contents : postContext,
             price : postPrice,
         }
 
         const data = new FormData();
+        // const tumbnail = new FormData(); 
+        data.append('dirName', d);
         for (let i = 0; i < postImages.length; i++) {
             data.append('file', postImages[i]);
-            switch (i) {
-                case 0:
-                    // setpostImageName1(postImages[0].name);
-                    body.picture1 = postImages[0].name;
-                    break;
-                case 1:
-                    // setpostImageName2(postImages[1].naae);
-                    body.picture2 = postImages[1].name;
-                    break;
-                case 2:
-                    // setpostImageName3(postImages[2].name);
-                    body.picture3 = postImages[2].name;
-                    break;
-                case 3:
-                    // setpostImageName4(postImages[3].name);
-                    body.picture4 = postImages[3].name;
-                    break;
-                case 4:
-                    // setpostImageName5(postImages[4].name);
-                    body.picture5 = postImages[4].name;
-                    break;
-            }
+            if (i == 0) {
+                // tumbnail.append('file', postImages[i]);
+                }
             console.log('fileName',postImages[i].name)
         }
-
         
-        console.log(body);
-
-        
-        
-        //이미지 전송
-        axios.post('/api/board/upload', data).then((e) => {
-        })
-        .catch((e) => {
-            console.error('Error',e)
-        })
-
+        //글 데이터 전송
         dispatch(writePost(body)).then(response => {
             if(response.payload.writepostSuccess) {
-                toast.success('Upload Success');
-                navigate("../board",{replace: true});
+                //이미지 전송
+                axios.post('/api/board/upload', data).then((e) => {
+                    toast.success('Upload Success', {
+                        position: "top-center",
+                        autoClose: 4000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        onClose: () => navigate("../board",{replace: true})
+                    })
+                })
+                .catch((e) => {
+                    toast.error('Upload Error');
+                })
             }
             else {
                 alert('Error')
             }
         })
     };
-
-
-
-    
     return (
         //게시판 작성
         <div>
@@ -134,10 +111,11 @@ function BoardwritePage() {
                     <Form.Label>글 내용</Form.Label>
                     <Form.Control as="textarea" rows={12} value={postContext} onChange={onContextHandler}/>
                 </Form.Group>
-                <div class="form-group files">
-                            <label>파일 업로드 </label>
-                            <input type="file" class="form-control" multiple onChange={onImageHandler}/>
-                </div>
+                <Form.Group controlId="formFileMultiple" className="mb-3">
+                    <Form.Label>파일 업로드</Form.Label>
+                    <Form.Control type="file" multiple onChange={onImageHandler}/>
+                </Form.Group>
+                <div className='IMGpreview'></div>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>판매 금액</Form.Label>
                     <Form.Control size ="lg" type="text" placeholder="판매 금액" value={postPrice} onChange={onPriceHandler} />
@@ -147,7 +125,15 @@ function BoardwritePage() {
                 </Button>
                 </div>
                 </form>
-                <ToastContainer />
+                <ToastContainer position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover/>
             </div>
             <Footer />
         </div>

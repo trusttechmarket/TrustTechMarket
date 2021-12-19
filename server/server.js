@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var mysql = require('mysql');
 var express = require('express');
@@ -15,9 +14,12 @@ var comment = mysql.createConnection(db.commentDB);
 var note = mysql.createConnection(db.noteDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
+var fs = require('fs');
 var auth_key = db.auth_key;
 var saltRounds = 10;
 const multer = require('multer');
+const res = require('express/lib/response');
+const { type } = require('express/lib/response');
 
 
 var app = express();
@@ -32,7 +34,7 @@ app.get('/api/hello', function(request, response) {
     response.send(userID + "님 환영합니다!"); //axios
 });
 
-// app.get('/api/board/:id', auth, function(request, response) {
+
 app.get('/api/board/:id', function(request, response) {
     console.log(request.params.id)
     var boardID = Number(request.params.id);
@@ -47,12 +49,8 @@ app.get('/api/board/:id', function(request, response) {
                 'region': data[0].writer_region,
                 'title': data[0].title,
                 'contents': data[0].description,
-                'picture1': data[0].picture1_url,
-                'picture2': data[0].picture2_url,
-                'picture3': data[0].picture3_url,
-                'picture4': data[0].picture4_url,
-                'picture5': data[0].picture5_url,
                 'price': data[0].price,
+                'image_dir': data[0].image_dir,
             };
             response.send(boardJson);
             console.log(boardJson);
@@ -60,28 +58,59 @@ app.get('/api/board/:id', function(request, response) {
         }
     });
 });
+app.get('/api/getImage/:id', function(request, response) {
+    var boardID = Number(request.params.id);
+    console.log(boardID);
+    var sql = `SELECT image_dir FROM board WHERE post_sn = ${boardID}`;
+    board.query(sql, function(err, data) {
+        
+        if(err) console.log("query error \n" + err);
+        else {
+            var dirNum = data[0].image_dir;
+            var imageJson = {};
+            fs.readdir(path.join(__dirname,`public/images/${dirNum}`), 'utf-8',(err, files)=> {
+                if (err) {
+                    res.status(500);
+                    throw err;
+                }
+                console.log(files);
+                files.forEach(function(filename){
+                    var fileData = fs.readFileSync(path.join(__dirname,`public/images/${dirNum}/` + filename), "base64")
+                    imageJson[filename] = fileData;
+                    console.log(imageJson);
+                })
+                response.send(imageJson);
+                })
+        }
+    })
+})
+
 
 app.get('/api/board', function(request, response) {
     console.log('request 수신' + request)
     var sqlQuery = 'SELECT * FROM board ORDER BY post_sn DESC';
     board.query(sqlQuery, function(err, data) {
-        let imagefiles = [];
-        // fs.readFileSync(`server/public/images/`)
-        for (let i = 0; i <data.length ; i++) {
-            console.log(data[i].picture1_url);
-            a = `data[${i}].picture1_url`;
-            console.log(a)
-        }
+        console.log(data);
         response.send(data);
     })
 })
 
-app.get('/api/getimage', function(request, response) {
-
+app.get('/api/getTumbnail', function(request, response) {
+    var tumbjson = {};
+    fs.readdir(path.join(__dirname,'public/images/thumbnail'), 'utf-8',(err, files)=> {
+        if (err) {
+            res.status(500);
+            throw err;
+        }
+        files.forEach(function(filename){
+            var fileData = fs.readFileSync(path.join(__dirname,'public/images/thumbnail/' + filename))
+            tumbjson[filename] = fileData.toString();
+        })
+        response.send(tumbjson);
+        })
 })
 
 app.post('/api/board/upload', (req, res) => {
-    var d = Date.now();
     var storRoute = `server/public/images/${d}`;
     if(!fs.existsSync(storRoute)) {
         fs.mkdirSync(storRoute)
@@ -91,6 +120,7 @@ app.post('/api/board/upload', (req, res) => {
             cb(null, storRoute)
         },
         filename: (req, file, cb) => {
+            // console.log(file)
             cb(null, file.originalname)
         }
     });
@@ -100,16 +130,27 @@ app.post('/api/board/upload', (req, res) => {
             console.log(err)
             return res.status(500).json(err)
         }
-        var upload_thumb = multer({ dest: 'server/public/thumbnail', filename: d}).single('file');
-        // upload_thumb(req.files[0]);
+        fs.readdir(storRoute, (err, data) => {
+            console.log(data[0])
+            fs.readFile(storRoute + "/" + data[0], 'base64', (err, file) => {
+                fs.writeFile(`server/public/images/thumbnail/${d}`,file ,(err) => {
+                    if (err) throw err;
+                    console.log('저장 성공', data[0])
+                })  
+            })
+        })
+
         return res.status(200).send(req.files)
     })
 })
 
+
 app.post('/api/board/write', function(request, response) {
     var writeJson = request.body;
-    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.price, writeJson.picture1, writeJson.picture2, writeJson.picture3,writeJson.picture4, writeJson.picture5, 1];
-    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, price, picture1_url, picture2_url,picture3_url,picture4_url,picture5_url,del) values(?,?,?,?,?,?,?,?,?,?,?)';
+    var datas = [writeJson.writer, writeJson.region, writeJson.title, writeJson.contents, writeJson.price, writeJson.pictureDIR, 1];
+    var dir = writeJson.pictureDIR;
+    d = dir;
+    var sql = 'INSERT INTO board(writer_id, writer_region, title, description, price, image_dir ,del) values(?,?,?,?,?,?,?)';
     board.query(sql, datas, function(err, data) {
         if(err) {
             console.log("write error\n" + err);
@@ -173,7 +214,7 @@ app.post('/api/register', function(request, response) {
             else {
                 response.status(400).json({register: false, error: "회원가입 실패"});
                 //response.redirect('/login');
-            }
+            }   
         });
     });    
 });

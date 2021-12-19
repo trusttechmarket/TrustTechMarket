@@ -2,7 +2,6 @@ import React from 'react'
 import { Card, Button } from 'react-bootstrap'
 
 function PostUnit(props) {
-
     return (
         <div>
            <div>

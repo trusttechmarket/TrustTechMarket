@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 function TopPannel() {
     const navigate = useNavigate();
-    
     const onHandleChange = () => {
          navigate("/", { replace: true });
     }
@@ -12,7 +11,7 @@ function TopPannel() {
     
     return (
         <div style={{width: '100%', justifyContent:'center', alignContent: 'center'}}>
-            <h1 style={{textAlign: 'center'}} onClick={onHandleChange}>믿을테크마켓</h1>
+            <h1 style={{textAlign: 'center', marginTop: '10px'}} onClick={onHandleChange}>믿을테크마켓</h1>
         </div>
     )
 }

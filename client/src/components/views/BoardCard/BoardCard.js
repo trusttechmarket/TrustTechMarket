@@ -1,19 +1,29 @@
+import { Divider } from 'antd';
 import React, { useState, useEffect } from 'react';
-import {Card, Button} from 'react-bootstrap';
+import {Card, Button, Container, Row, Col} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+
 
 function BoardCard(props) {
     const [Post_sn, setPost_sn] = useState();
     const [Title, setTitle] = useState("제목");
     const [Writer, setWriter] = useState("작성자");
-    const [Contents, setContents] = useState("본문");    
-    const [Mainimage, setMainimage] = useState(null);
     const [Price, setPrice] = useState("");
+    const [Contents, setContents] = useState("");
+
+    function imagePaste(BufferThumbnail) {
+        if(BufferThumbnail != undefined) {
+            var s = BufferThumbnail.toString('base64');
+            return s;
+        }
+        else {
+            return null;
+        }
+    }
 
     useEffect(() => {
         setTitle(props.Title);
-        setContents(props.Contents);
-        setMainimage(props.ImageURL);
+        setContents(props.Contents.substring(0,20));
         setPrice(props.Price);
         setWriter(props.Writer);
         setPost_sn(props.Post_sn);
@@ -31,18 +41,25 @@ function BoardCard(props) {
           objectFit: 'cover',
         }
     }
-    
+    console.log('on Card',props.Thumbnail)
+
     return (
         <div>
             <Card style={styles.card}>
-                <Card.Img variant="top" src={require('../../../img/KakaoTalk_Photo_2021-12-01-06-14-58.jpeg')} style ={styles.cardImage}/>
+                <Card.Img variant="top" src={`data:image/jpeg;base64,${props.Thumbnail}`} alt="" style ={styles.cardImage}/>
                 <Card.Body>
                     <Card.Title>{Title}</Card.Title>
-                    <Card.Subtitle>{Price} 원</Card.Subtitle>
                     <Card.Text>
-                        {Writer}
+                        {Contents}
                     </Card.Text>
-                    <Link to={`/board/${Post_sn}`}><Button variant="primary" >제품 보기</Button></Link>
+                    <hr/>
+                    
+                    <Container>
+                        <Row>
+                            <Col><Card.Title>{Price} 원</Card.Title></Col>
+                            <Col><Link to={`/board/${Post_sn}`}><Button variant="primary" >제품 보기</Button></Link></Col>
+                        </Row>
+                    </Container>
                 </Card.Body>
             </Card>
         </div>
