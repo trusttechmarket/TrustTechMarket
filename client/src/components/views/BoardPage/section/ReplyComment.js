@@ -15,7 +15,7 @@ function ReplyComment(props) {
         })};
         
         setChildCommentNumber(commentNumber);
-    }, [props.commentLists])
+    }, [props.commentLists, props.parentCommentId])
     
     const onHandleChange = () => {
         setOpenReplyComments(!OpenReplyComments);
