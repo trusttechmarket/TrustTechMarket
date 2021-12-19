@@ -10,8 +10,8 @@ var db = require('./database.js');
 var bcrypt = require('bcrypt');
 var board = mysql.createConnection(db.boardDB);
 var account = mysql.createConnection(db.accountDB);
-// var comment = mysql.createConnection(db.commentDB);
-// var note = mysql.createConnection(db.noteDB);
+var comment = mysql.createConnection(db.commentDB);
+var note = mysql.createConnection(db.noteDB);
 var jwt = require('jsonwebtoken');
 var { auth } = require('./auth.js');
 var fs = require('fs');
@@ -287,98 +287,98 @@ app.get('/api/logout', auth, function(request, response){
     });
 })
 
-//  app.post('/api/comment/saveComment', function(request, response) {
-//      var content = request.body.content;
-//      var writer = request.body.writer;
-//      var postID = request.body.postID;
-//      var responseTo = request.body.responseTo;
-//      var time = new Date();
-//      var datas = [writer, postID, content, responseTo, time];
-//      var sqlInsert = 'INSERT INTO comment(writer_id, post_sn, content, responseTo, time) values(?,?,?,?,?)';
-//      var sqlSelect = 'SELECT * FROM comment WHERE comment_sn = (?)';
-//      comment.query(sqlInsert, datas, function(err, data) {
-//          if(err) {
-//              console.log("comment save error\n", err);
-//              response.json({success: false, err});
-//          }
-//          else {
-//              comment.query(sqlSelect, [data.insertId], function(err2, result) {
-//                 if(err2) {
-//                      console.log("comment load error\n", err2);
-//                      response.json({success: false, err2});
-//                  }
-//                 else {
-//                     response.status(200).json({success: true, result, data});
-//                  }
+  app.post('/api/comment/saveComment', function(request, response) {
+      var content = request.body.content;
+      var writer = request.body.writer;
+      var postID = request.body.postID;
+      var responseTo = request.body.responseTo;
+      var time = new Date();
+      var datas = [writer, postID, content, responseTo, time];
+      var sqlInsert = 'INSERT INTO comment(writer_id, post_sn, content, responseTo, time) values(?,?,?,?,?)';
+      var sqlSelect = 'SELECT * FROM comment WHERE comment_sn = (?)';
+      comment.query(sqlInsert, datas, function(err, data) {
+          if(err) {
+              console.log("comment save error\n", err);
+              response.json({success: false, err});
+          }
+          else {
+              comment.query(sqlSelect, [data.insertId], function(err2, result) {
+                 if(err2) {
+                      console.log("comment load error\n", err2);
+                      response.json({success: false, err2});
+                  }
+                 else {
+                     response.status(200).json({success: true, result, data});
+                  }
                 
-//          })
-//          }
+          })
+          }
         
-//          //data.insertId
+          //data.insertId
         
-//      });
-//  })
+      });
+  })
 
-//  app.post('/api/comment/getComments', function(request, response) {
-//      var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
-//      var postID = request.body.postID;
-//      comment.query(sqlSelect, [postID], function(err, data) {
-//          if(err) {
-//              console.log("comment load error\n", err);
-//              response.json({success: false, err});
-//          }
-//          else {
-//              response.status(200).json({success: true, data});
-//          }
-//      })
-//  })
+  app.post('/api/comment/getComments', function(request, response) {
+      var sqlSelect = 'SELECT * FROM comment WHERE post_sn = (?)';
+      var postID = request.body.postID;
+      comment.query(sqlSelect, [postID], function(err, data) {
+          if(err) {
+              console.log("comment load error\n", err);
+              response.json({success: false, err});
+          }
+          else {
+              response.status(200).json({success: true, data});
+          }
+      })
+  })
 
 
 
-// app.post('/api/note/sendnote', function(request, response) {
-//     var sql = 'INSERT INTO note(sender, receiver, title, content, time) values(?,?,?,?,?)'
-//     var sender = request.body.sender;
-//     var receiver = request.body.receiver;
-//     var title = request.body.title;
-//     var content = request.body.content;
-//     var time = new Date();
-//     note.query(sql, [sender, receiver, title, content, time], function(err, data) {
-//         if(err) {
-//             console.log("sendNote error \n", err);
-//             response.status(400).json({success: false, err});
-//         }
-//         else {
-//             response.status(200).json({success: true});
-//         }
-//     })
-// })
+ app.post('/api/note/sendnote', function(request, response) {
+     var sql = 'INSERT INTO note(sender, receiver, title, content, time) values(?,?,?,?,?)'
+     var sender = request.body.sender;
+     var receiver = request.body.receiver;
+     var title = request.body.title;
+     var content = request.body.content;
+     var time = new Date();
+     note.query(sql, [sender, receiver, title, content, time], function(err, data) {
+         if(err) {
+             console.log("sendNote error \n", err);
+             response.status(400).json({success: false, err});
+         }
+         else {
+             response.status(200).json({success: true});
+         }
+     })
+ })
 
-// app.post('/api/note/getsendnote', function(request, response) {
-//     var sqlSend = 'SELECT * FROM note WHERE sender = (?)';
-//     var sender = request.body.id;
-//     note.query(sqlSend, [sender], function(err, data) {
-//         if(err) {
-//             console.log("getSendNote error", err);
-//             response.status(400).json({success: false, err});
-//         }
-//         else {
-//             response.status(200).json({success: true, data});
-//         }
-//     })
-// })
-// app.post('/api/note/getrecnote', function(request, response) {
-//     var sqlSend = 'SELECT * FROM note WHERE receiver = (?)';
-//     var receiver = request.body.id;
-//     note.query(sqlSend, [receiver], function(err, data) {
-//         if(err) {
-//             console.log("getRecNote error", err);
-//             response.status(400).json({success: false, err});
-//         }
-//         else {
-//             response.status(200).json({success: true, data});
-//         }
-//     })
-// })
+ app.post('/api/note/getsendnote', function(request, response) {
+     var sqlSend = 'SELECT * FROM note WHERE sender = (?)';
+     var sender = request.body.id;
+     note.query(sqlSend, [sender], function(err, data) {
+         if(err) {
+             console.log("getSendNote error", err);
+             response.status(400).json({success: false, err});
+         }
+         else {
+             response.status(200).json({success: true, data});
+         }
+     })
+ })
+ app.post('/api/note/getrecnote', function(request, response) {
+     var sqlSend = 'SELECT * FROM note WHERE receiver = (?)';
+     var receiver = request.body.id;
+     note.query(sqlSend, [receiver], function(err, data) {
+         if(err) {
+             console.log("getRecNote error", err);
+             response.status(400).json({success: false, err});
+         }
+         else {
+             response.status(200).json({success: true, data});
+         }
+     })
+ })
 
 server.listen(7777, function() {
     console.log('Server Running');
