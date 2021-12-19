@@ -24,6 +24,7 @@ function BoardlistPage() {
     console.log('bl',boardList);
     console.log('tl',thumbnailList);
     console.log(thumbnailList[1639866110105])
+    
     return (
         //게시판 불러오기 페이지
         <div>

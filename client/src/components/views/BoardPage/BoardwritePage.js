@@ -41,6 +41,7 @@ function BoardwritePage() {
         let d = Date.now()
         console.log(d)
         let body = {
+            title: postTitle,
             writer : user.userData?.user_id,
             region : postRegion, 
             pictureDIR : d,
@@ -104,7 +105,7 @@ function BoardwritePage() {
                         </Col>
                         <Col>
                             <Form.Label>거래 지역</Form.Label>
-                            <Form.Control type="text" placeholder="지역" onChage={onRegionHandler} />
+                            <Form.Control type="text" placeholder="지역" value={postRegion} onChange={onRegionHandler} />
                         </Col>
                     </Row>
                 </Form.Group>
