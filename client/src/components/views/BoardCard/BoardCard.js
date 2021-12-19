@@ -11,15 +11,6 @@ function BoardCard(props) {
     const [Price, setPrice] = useState("");
     const [Contents, setContents] = useState("");
 
-    function imagePaste(BufferThumbnail) {
-        if(BufferThumbnail != undefined) {
-            var s = BufferThumbnail.toString('base64');
-            return s;
-        }
-        else {
-            return null;
-        }
-    }
 
     useEffect(() => {
         setTitle(props.Title);
@@ -41,7 +32,6 @@ function BoardCard(props) {
           objectFit: 'cover',
         }
     }
-    console.log('on Card',props.Thumbnail)
 
     return (
         <div>
