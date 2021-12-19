@@ -42,9 +42,9 @@ function App() {
           <Route exact path="/" element={Auth(LandingPage, null)}/>
           <Route path="/login" element={Auth(LoginPage, false)}/>
           <Route path="/register" element={Auth(RegisterPage, false)}/>
-          <Route path="/board" element={<BoardlistPage />}/>
-          <Route path="/board/:id" element={Auth(BoardunitPage, false)}/>
-          <Route path="/board/write" element={<BoardwritePage />}/>
+          <Route path="/board" element={Auth(BoardlistPage, null )}/>
+          <Route path="/board/:id" element={Auth(BoardunitPage, null)}/>
+          <Route path="/board/write" element={Auth(BoardwritePage, true)}/>
           <Route path="/note" element={Auth(NotePage, true)}/>
           <Route path="/sendnote" element={Auth(SendNote, true)}/>
         </Routes>
